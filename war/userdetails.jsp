@@ -4,14 +4,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Create listing</title>
 </head>
+
 <body>
-	<div id="userDetails">
-		<label for="quantity"></label> <input type="text" id="quantity" />
-		<label for="description"></label> 
-		
-		
+<h1>Create listing</h1>
+	<div id="createListing">
+		<form method="post">
+			<label for="quantity">Quantity</label> <input type="text" id="quantity" />
+			<br />
+			<label for="description">Description</label> <br />
+			<textarea rows="10" cols="70" id="description"></textarea>
+			<br />
+			<button id="save" type="submit">Save</button>
+		</form>
+
 	</div>
 </body>
 </html>
