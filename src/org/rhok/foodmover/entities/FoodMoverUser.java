@@ -1,44 +1,61 @@
 package org.rhok.foodmover.entities;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserServiceFactory;
 
-@Entity
-public class FoodMoverUser {
+public class FoodMoverUser extends BaseEntity {
 	
-	public enum UserType {CONSUMER, PRODUCER};
+	private static final String FOOD_MOVER_USER_KIND = "FoodMoverUser";
 	
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Key key;
-
-	@Basic
-	private User user;
+	private static final String USER_KEY = "user";
+	private static final String USER_TYPE_KEY = "user type";
 	
-	@Enumerated(EnumType.STRING)
-	private UserType userType;
-	
-	public UserType getUserType() {
-		return userType;
+	private FoodMoverUser(Entity entity) {
+		this.entity = entity;
 	}
-
-	public void setUserType(UserType userType) {
-		this.userType = userType;
+	
+	public FoodMoverUser() {
+		entity = new Entity(FOOD_MOVER_USER_KIND);
 	}
 
 	public void setUser(User user) {
-		this.user = user;
+		entity.setProperty(USER_KEY, user);
+	}
+	
+	public void setIsProducer(boolean isProducer) {
+		entity.setProperty(USER_TYPE_KEY, isProducer);
+	}
+	
+	public static FoodMoverUser getCurrentUser() {
+		User currRawUser = UserServiceFactory.getUserService().getCurrentUser();
+		if (currRawUser == null) {
+			return null;
+		}
+		
+		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
+		Query q = new Query(FOOD_MOVER_USER_KIND);
+		q.addFilter(USER_KEY, Query.FilterOperator.EQUAL, currRawUser);
+		PreparedQuery prepQ = data.prepare(q);
+		
+		for (Entity found : prepQ.asIterable()) {
+			return new FoodMoverUser(found);
+		}
+		
+		return null;
+	}
+	
+	public static FoodMoverUser registerCurrentUser() {
+		FoodMoverUser result = new FoodMoverUser();
+		result.setUser(UserServiceFactory.getUserService().getCurrentUser());
+		return result;
 	}
 
-	public User getUser() {
-		return user;
+	public boolean isProducer() {
+		return (Boolean) entity.getProperty(USER_TYPE_KEY);
 	}
 }

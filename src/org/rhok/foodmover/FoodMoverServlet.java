@@ -1,12 +1,10 @@
 package org.rhok.foodmover;
 
 import java.io.IOException;
-import java.util.List;
 
-import javax.servlet.http.*;
-
-import org.rhok.foodmover.entities.FoodListing;
-import org.rhok.foodmover.services.FoodListingService;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("serial")
 public class FoodMoverServlet extends HttpServlet {

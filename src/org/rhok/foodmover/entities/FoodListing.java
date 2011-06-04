@@ -1,65 +1,47 @@
 package org.rhok.foodmover.entities;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.google.appengine.api.datastore.Entity;
 
-import com.google.appengine.api.datastore.Key;
+public class FoodListing extends BaseEntity {
 
-@Entity
-public class FoodListing {
-	
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Key key;
+	private static final String LAT_KEY = "lat";
+	private static final String LONGITUDE_KEY = "longitude";
+	private static final String QUANTITY_KEY = "quantity";
+	private static final String DESCRIPTION_KEY = "descr";
 
-	@Basic
-	private float latitude;
-	
-	@Basic
-	private float longitude;
-	
-	@Basic
-	private int quantity;
-	
-	@Basic
-	private String description;
-	
-	public float getLatitude() {
-		return latitude;
+	public FoodListing() {
+		entity = new Entity("FoodListing");
 	}
 
-	public void setLatitude(float latitude) {
-		this.latitude = latitude;
-	}
-
-	public float getLongitude() {
-		return longitude;
+	public void setLat(float lat) {
+		entity.setProperty(LAT_KEY, lat);
 	}
 
 	public void setLongitude(float longitude) {
-		this.longitude = longitude;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public int getQuantity() {
-		return quantity;
+		entity.setProperty(LONGITUDE_KEY, longitude);
 	}
 
 	public void setQuantity(int quantity) {
-		this.quantity = quantity;
+		entity.setProperty(QUANTITY_KEY, quantity);
 	}
 
-	public Key getKey() {
-		return key;
+	public void setDescription(String description) {
+		entity.setProperty(DESCRIPTION_KEY, description);
+	}
+
+	public float getLat() {
+		return (Float) entity.getProperty(LAT_KEY);
+	}
+
+	public float getLongitude() {
+		return (Float) entity.getProperty(LONGITUDE_KEY);
+	}
+
+	public int getQuantity() {
+		return (Integer) entity.getProperty(QUANTITY_KEY);
+	}
+
+	public String getDescription() {
+		return (String) entity.getProperty(DESCRIPTION_KEY);
 	}
 }
