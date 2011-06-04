@@ -9,29 +9,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.users.User;
 
 @Entity
-public class User {
+public class FoodMoverUser {
 	
-	enum UserType {CONSUMER, PRODUCER};
+	public enum UserType {CONSUMER, PRODUCER};
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Key key;
-	
+
 	@Basic
-	private String userId;
+	private User user;
 	
 	@Enumerated(EnumType.STRING)
 	private UserType userType;
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
 	
 	public UserType getUserType() {
 		return userType;
@@ -39,5 +32,13 @@ public class User {
 
 	public void setUserType(UserType userType) {
 		this.userType = userType;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public User getUser() {
+		return user;
 	}
 }
