@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import com.google.appengine.api.datastore.Key;
 
 @Entity
-public class User {
+public class UserDetails {
 	
 	enum UserType {CONSUMER, PRODUCER};
 	
