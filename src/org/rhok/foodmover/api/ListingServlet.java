@@ -1,6 +1,7 @@
 package org.rhok.foodmover.api;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -9,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.rhok.foodmover.entities.FoodListing;
-import org.rhok.foodmover.services.FoodListingService;
+import org.rhok.foodmover.entities.FoodMoverUser;
 
 import com.google.appengine.repackaged.org.json.JSONStringer;
 
@@ -23,14 +24,16 @@ public class ListingServlet extends HttpServlet {
 		float longitude = Float.parseFloat(req.getParameter("lng"));
 		String description = req.getParameter("description");
 		int quantity = Integer.parseInt(req.getParameter("quantity"));
-
+		
 		FoodListing listing = new FoodListing();
-		listing.setLatitude(lat);
+		listing.setLat(lat);
 		listing.setLongitude(longitude);
 		listing.setDescription(description);
 		listing.setQuantity(quantity);
-
-		FoodListingService.addFoodListing(listing);
+		listing.setOwner(FoodMoverUser.getCurrentUser());
+		
+		listing.put();
+		
 		resp.getWriter().println(listing.getKey());
 	}
 
@@ -43,15 +46,14 @@ public class ListingServlet extends HttpServlet {
 		// TODO: Make distance optional
 		float distance = Float.parseFloat(req.getParameter("distance"));
 
-		List<FoodListing> foodlistings = FoodListingService.findFoodListings(longitude, latitude, distance);
-
+		List<FoodListing> foodlistings = doQuery(longitude, latitude, distance);
 		
 		JSONStringer jsonStringer = new JSONStringer();
 		try {
 			jsonStringer.array();
 			for (FoodListing foodListing : foodlistings) {
 				jsonStringer.object()
-				.key("lat").value(foodListing.getLatitude())
+				.key("lat").value(foodListing.getLat())
 				.key("lng").value(foodListing.getLongitude())
 				.key("description").value(foodListing.getDescription())
 				.key("quantity").value(foodListing.getQuantity()).endObject();
@@ -64,6 +66,30 @@ public class ListingServlet extends HttpServlet {
 			throw new ServletException(e);
 		}
 
+	}
+	
+	public static List<FoodListing> doQuery(Float longitude, Float latitude, Float distance)
+	{
+		List<FoodListing> result = new ArrayList<FoodListing>();
+		
+		FoodListing fl1 = new FoodListing();
+		fl1.setLat(1);
+		fl1.setLongitude(1);
+		fl1.setDescription("Food listing 1");
+		fl1.setQuantity(2);
+		
+		FoodListing fl2 = new FoodListing();
+		fl2.setLat(1);
+		fl2.setLongitude(1);
+		fl2.setDescription("Food listing 2");
+		fl2.setQuantity(2);
+		
+		result.add(fl1);
+		result.add(fl2);
+		
+		return result;
+		
+		//throw new RuntimeException("Not implemented");
 	}
 
 }

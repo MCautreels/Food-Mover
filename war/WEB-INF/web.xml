@@ -21,18 +21,35 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Listing</servlet-name>
 		<url-pattern>/api/v1/listings</url-pattern>
 	</servlet-mapping>
-	
-	
+
 	<servlet>
-		<servlet-name>UserDetails</servlet-name>
-		<servlet-class>org.rhok.foodmover.UserDetailsServlet</servlet-class>
+		<servlet-name>IsProducer</servlet-name>
+		<servlet-class>org.rhok.foodmover.api.IsProducerServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>UserDetails</servlet-name>
-		<url-pattern>/userdetails</url-pattern>
+		<servlet-name>IsProducer</servlet-name>
+		<url-pattern>/api/v1/isProducer</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>IsConsumer</servlet-name>
+		<servlet-class>org.rhok.foodmover.api.IsConsumerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>IsConsumer</servlet-name>
+		<url-pattern>/api/v1/isConsumer</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ListingCreate</servlet-name>
+		<servlet-class>org.rhok.foodmover.web.servlets.CreateListingServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ListingCreate</servlet-name>
+		<url-pattern>/createListing</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 </web-app>
