@@ -26,7 +26,7 @@ public class AddListingServlet extends HttpServlet {
 		listing.setDescription(description);
 		listing.setQuantity(quantity);
 		listing.setOwner(FoodMoverUser.getCurrentUser());
-		
+		 
 		listing.put();
 		
 		resp.getWriter().println(listing.getKey());
