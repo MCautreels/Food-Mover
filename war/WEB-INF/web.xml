@@ -14,11 +14,11 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>AddListing</servlet-name>
-		<servlet-class>org.rhok.foodmover.api.AddListingServlet</servlet-class>
+		<servlet-name>Listing</servlet-name>
+		<servlet-class>org.rhok.foodmover.api.ListingServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>AddListing</servlet-name>
+		<servlet-name>Listing</servlet-name>
 		<url-pattern>/api/v1/listings</url-pattern>
 	</servlet-mapping>
 	

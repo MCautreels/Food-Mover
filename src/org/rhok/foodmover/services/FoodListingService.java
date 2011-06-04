@@ -34,6 +34,28 @@ public class FoodListingService {
 		}
 	}
 	
+	public static List<FoodListing> findFoodListings(Float longitude, Float latitude, Float distance)
+	{
+		List<FoodListing> result = new ArrayList<FoodListing>();
+		
+		FoodListing fl1 = new FoodListing();
+		fl1.setLatitude(1);
+		fl1.setLongitude(1);
+		fl1.setDescription("Food listing 1");
+		
+		FoodListing fl2 = new FoodListing();
+		fl2.setLatitude(1);
+		fl2.setLongitude(1);
+		fl2.setDescription("Food listing 2");
+		
+		result.add(fl1);
+		result.add(fl2);
+		
+		return result;
+		
+		//throw new RuntimeException("Not implemented");
+	}
+	
 	public static List<FoodListing> getFoodListingByName(String name)
 	{
 		List<FoodListing> resultList = new ArrayList<FoodListing>();
