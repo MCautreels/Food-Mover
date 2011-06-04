@@ -1,4 +1,5 @@
 var map;
+var latLng;
 
 $().ready(function() {
 	resetMap();
@@ -15,8 +16,10 @@ $().ready(function() {
 			scroll : true,
 			scrollHeight : 330
 		}).result(function(_event, _data) {
-			var latLng = _data.geometry.location;
+			latLng = _data.geometry.location;
 
+			console.log(latLng);
+			
 			var marker = new google.maps.Marker(
 					{
 						position : latLng,
