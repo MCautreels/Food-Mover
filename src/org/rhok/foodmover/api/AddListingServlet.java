@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.rhok.foodmover.entities.FoodListing;
+import org.rhok.foodmover.entities.FoodMoverUser;
 
 @SuppressWarnings("serial")
 public class AddListingServlet extends HttpServlet {
@@ -24,6 +25,7 @@ public class AddListingServlet extends HttpServlet {
 		listing.setLongitude(longitude);
 		listing.setDescription(description);
 		listing.setQuantity(quantity);
+		listing.setOwner(FoodMoverUser.getCurrentUser());
 		
 		listing.put();
 		

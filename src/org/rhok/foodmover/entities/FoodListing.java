@@ -8,6 +8,7 @@ public class FoodListing extends BaseEntity {
 	private static final String LONGITUDE_KEY = "longitude";
 	private static final String QUANTITY_KEY = "quantity";
 	private static final String DESCRIPTION_KEY = "descr";
+	private static final String OWNER_KEY = "owner";
 
 	public FoodListing() {
 		entity = new Entity("FoodListing");
@@ -15,6 +16,10 @@ public class FoodListing extends BaseEntity {
 
 	public void setLat(float lat) {
 		entity.setProperty(LAT_KEY, lat);
+	}
+	
+	public void setOwner(FoodMoverUser owner) {
+		entity.setProperty(OWNER_KEY, owner);
 	}
 
 	public void setLongitude(float longitude) {
@@ -43,5 +48,9 @@ public class FoodListing extends BaseEntity {
 
 	public String getDescription() {
 		return (String) entity.getProperty(DESCRIPTION_KEY);
+	}
+	
+	public FoodMoverUser getOwner() {
+		return (FoodMoverUser) entity.getProperty(OWNER_KEY);
 	}
 }
