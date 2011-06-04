@@ -14,15 +14,48 @@ public class FoodListing {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Key key;
+
+	@Basic
+	private float latitude;
 	
 	@Basic
-	private String name;
-
-	public String getName() {
-		return name;
+	private float longitude;
+	
+	@Basic
+	private int quantity;
+	
+	@Basic
+	private String description;
+	
+	public float getLatitude() {
+		return latitude;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLatitude(float latitude) {
+		this.latitude = latitude;
+	}
+
+	public float getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(float longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 }

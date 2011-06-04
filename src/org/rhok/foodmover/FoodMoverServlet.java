@@ -13,15 +13,5 @@ public class FoodMoverServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 		resp.getWriter().println("Hello, world");
-		
-		FoodListingService foodListingService = new FoodListingService();
-		FoodListing fl = new FoodListing();
-		fl.setName("Test123");
-		foodListingService.addFoodListing(fl);
-		
-		List<FoodListing> listings = foodListingService.getFoodListingByName("Test123");
-		for (FoodListing foodListing : listings) {
-			resp.getWriter().println("Found: " + foodListing.getName());
-		}
 	}
 }
