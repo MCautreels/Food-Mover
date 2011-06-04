@@ -14,7 +14,7 @@ import org.rhok.foodmover.services.FoodListingService;
 public class AddListingServlet extends HttpServlet {
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		float lat = Float.parseFloat(req.getParameter("lat"));
 		float longitude = Float.parseFloat(req.getParameter("lng"));
 		String description = req.getParameter("description");
