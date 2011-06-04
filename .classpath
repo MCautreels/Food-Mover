@@ -4,5 +4,7 @@
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="C:/Users/Nick/.eclipse/org.eclipse.platform_3.6.1_867647348/plugins/com.google.appengine.eclipse.sdkbundle_1.5.0.r36v201105191508/appengine-java-sdk-1.5.0.1/lib/testing/appengine-testing.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Nick/.eclipse/org.eclipse.platform_3.6.1_867647348/plugins/com.google.appengine.eclipse.sdkbundle_1.5.0.r36v201105092302/appengine-java-sdk-1.5.0/lib/impl/appengine-api-stubs.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
