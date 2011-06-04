@@ -58,4 +58,8 @@ public class FoodListing {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
+
+	public Key getKey() {
+		return key;
+	}
 }

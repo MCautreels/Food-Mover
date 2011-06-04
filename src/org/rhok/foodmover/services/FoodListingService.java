@@ -8,13 +8,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-
 import org.rhok.foodmover.database.EMF;
 import org.rhok.foodmover.entities.FoodListing;
 
 public class FoodListingService {
 	
-	public void addFoodListing(FoodListing foodlisting){
+	public static void addFoodListing(FoodListing foodlisting){
 		EntityManagerFactory emf = EMF.get();
 		EntityManager em = emf.createEntityManager();
 		
@@ -35,7 +34,7 @@ public class FoodListingService {
 		}
 	}
 	
-	public List<FoodListing> getFoodListingByName(String name)
+	public static List<FoodListing> getFoodListingByName(String name)
 	{
 		List<FoodListing> resultList = new ArrayList<FoodListing>();
 		EntityManagerFactory emf = EMF.get();
