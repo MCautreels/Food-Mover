@@ -14,10 +14,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	
 	<servlet>
-<<<<<<< HEAD
-		<servlet-name>ListingCreate</servlet-name>
-		<servlet-class>org.rhok.foodmover.web.servlets.CreateListingServlet</servlet-class>
-=======
 		<servlet-name>AddListing</servlet-name>
 		<servlet-class>org.rhok.foodmover.api.AddListingServlet</servlet-class>
 	</servlet>
@@ -26,11 +22,9 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/api/v1/listings</url-pattern>
 	</servlet-mapping>
 	
-	
 	<servlet>
-		<servlet-name>UserDetails</servlet-name>
-		<servlet-class>org.rhok.foodmover.UserDetailsServlet</servlet-class>
->>>>>>> 78658a7a06103d6512a8d535fdc5420c1b47b051
+		<servlet-name>ListingCreate</servlet-name>
+		<servlet-class>org.rhok.foodmover.web.servlets.CreateListingServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ListingCreate</servlet-name>
