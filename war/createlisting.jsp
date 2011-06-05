@@ -84,6 +84,8 @@
 		
 	} %>
 	
+	<h1>Create Listing</h1>
+	
 	<div id="dialog-message" style="display: none;" title="Saved succesfully">
 		<p>
 			<span class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>

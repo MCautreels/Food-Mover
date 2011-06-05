@@ -18,19 +18,23 @@ $().ready(function() {
 });
 
 function afterGeocoding(_event, _data){
-    updateMap(_event, _data);
+    updateMap(_data.geometry.location, _data.formatted_address);
     getListing(_data.geometry.location.lat(), _data.geometry.location.lng());
 };
 
-function updateMap(_event, _data) {
-	latLng = _data.geometry.location;
+function afterHtml5Geocoding(latlng) {
+	updateMap(latlng, "Your location");
+	getListing(latlng.lat(), latlng.lng());
+}
+
+function updateMap(latLng, address) {
 
 	var marker = new google.maps.Marker(
 		{
 			position : latLng,
 			map : map,
 			title : "Your location: "
-				+ _data.formatted_address
+				+ address
 		});
 
 	map.setCenter(latLng);
@@ -98,7 +102,7 @@ function getListing(lat, lng){
         	map.fitBounds(latlngbounds);
         	
         	if(doRefresh) {
-        		t = setTimeout("getListing(" + lat + "," + lng + ")", 10000);
+        		t = setTimeout("getListing(" + lat + "," + lng + ")", 2000);
         	}
         }
     });
