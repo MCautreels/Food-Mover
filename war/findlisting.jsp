@@ -6,7 +6,13 @@
 <script type="text/javascript" src="js/geo_autocomplete.js"></script>
 <link rel="stylesheet" type="text/css" href="css/jquery.autocomplete.css" />
 <script type="text/javascript" src="js/find-listings.js"></script>
+<script type="text/javascript" src="js/geo-location.js"></script>
 <h1>Find listing</h1>
+
+<article>
+  <p>Finding your location: <span id="status">checking...</span></p>
+</article>
+
 <div id="findListing" style="width: 308px; float: left; margin-right: 5px;">
 	<label for="quantity">Find food near:</label> 
 	<input type="text" id="location" />
