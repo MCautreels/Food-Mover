@@ -36,20 +36,13 @@
 		<div id="container">
 			<header>
 				<img src="images/headerLogo.png" alt="headerLogo" />
-                <span style="float: right">
-                    <a href="?lang=nl"><img src="images/flag_nl.png" alt="flag_nl" /></a>
-                    <a href="?lang=en"><img src="images/flag_en.png" alt="flag_en" /></a>
-                </span>
-				<!--<nav>
-					<ul>
-						<li class="activeLink">Home</li>
-						<li>Contact</li>
-					</ul>
-				</nav>-->
 			</header>
 			<div id="landingPageMiddle">
-				<h1>Some kind of Slogan</h1>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean posuere mi ut neque dictum euismod. Suspendisse posuere rhoncus ligula quis condimentum. Curabitur dignissim faucibus justo et faucibus. Suspendisse vel elit felis, eu rhoncus tellus. Vestibulum pulvinar tincidunt eros, non pharetra eros suscipit id. In nisi eros, semper id pretium et, tincidunt et tortor.</p>
+				<h1>Stop wasting food</h1>
+				<p>Food waste is inescapable, whether you're a caterer, a cafeteria, or a restaurant.
+				With FoodMovr, you can find people to make use of the food, instead of throwing it away.</p>
+				<p>If you're a food bank, soup kitchen, or some random person on the street, this app 
+					connects you with those who have extra food.</p>
 				<img src="images/landingPageMiddleImage.png" alt="landingPageMiddleImage" />
 			</div>
 			<div id="landingPageBottom">
@@ -59,15 +52,15 @@
 				</div>
 				<div class="bottomBox">
 					<img src="images/notifications.png" alt="notifications" />
-					<p>Easy notification system to stay up to date realtime.</p>
+					<p>Get notified when food is available nearby.</p>
 				</div>
 				<div class="bottomBox">
 					<img src="images/platforms.png" alt="platforms" />
-					<p>Use different clients like Smartphones, Dumbphones, computer, netbook, ...</p>
+					<p>Connect from your desktop or smartphone</p>
 				</div>
 				<div class="bottomBox">
-					<a class="largeButton" id="loginProducerButton" href="<%=userService.createLoginURL("/?producer=true")%>">Login as a Producer</a>
-					<a class="largeButton" id="loginConsumerButton" href="<%=userService.createLoginURL("/?consumer=true")%>">Login as a Consumer</a>
+					<a class="largeButton" id="loginProducerButton" href="<%=userService.createLoginURL("/?producer=true")%>">I want to give food away</a>
+					<a class="largeButton" id="loginConsumerButton" href="<%=userService.createLoginURL("/?consumer=true")%>">I want to get extra food</a>
 				</div>
 			</div>
 		</div>

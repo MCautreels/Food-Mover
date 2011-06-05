@@ -33,7 +33,11 @@ public class ListingServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+		if (req.getParameter("action").equals("delete")) {
+			doDelete(req, resp);
+			return;
+		}
+		
 		checkParams(req);
 
 		float lat = Float.parseFloat(req.getParameter("lat"));
@@ -141,13 +145,14 @@ public class ListingServlet extends HttpServlet {
 			throw new IllegalStateException("No key parameter set");
 
 		Key key = KeyFactory.stringToKey(req.getParameter("key"));
-		FoodListing fl = new FoodListing(key);
+		new FoodListing(key).delete();
+		System.out.println("deleted");
 
-		if (fl.getOwner().getRawUserObject().equals(FoodMoverUser.getCurrentUser().getRawUserObject())) {
-			fl.delete();
-		} else {
-			throw new IllegalAccessError("You have to be the owner of the listing");
-		}
+//		if (fl.getOwner().getRawUserObject().equals(FoodMoverUser.getCurrentUser().getRawUserObject())) {
+//			fl.delete();
+//		} else {
+//			throw new IllegalAccessError("You have to be the owner of the listing");
+//		}
 	}
 
 	@Override

@@ -53,8 +53,28 @@ function getListing(){
         		var newRow = '<tr class="entry">';
         		newRow += '<td>' + value.description + '</td>';
         		newRow += '<td>' + value.quantity + '</td>';
+        		newRow += '<td><input type="hidden" value="' + value.id + '" /><button class="delete">Delete</button>'; 
         		
         		$('#listings').append(newRow);
+        		
+        		$(".delete").click(function() {
+        			var listingKey = $(this).prev("input").val();
+        			var row = $(this).parent().parent();
+        			/*
+        			$.ajax({
+        				url: 'api/v1/listings?key=' + listingKey,
+        				action: 'DELETE',
+        				success: function(result) {
+        						row.remove();
+        				}
+        			});
+        			*/
+        			
+        			$.post('api/v1/listings?action=delete&key=' + listingKey, function(result) { 
+        					row.remove();
+        			});
+        			
+        		});
         	});
         	
         	var latlngbounds = new google.maps.LatLngBounds( );
