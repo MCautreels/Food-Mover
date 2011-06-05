@@ -43,12 +43,7 @@
                     <a href="#"><img src="images/flag_en.png" alt="flag_en" /></a>
                 </span>
 				<div>
-					<ul>
-						<jsp:include page="menu.jsp" />	
-                        <li><a href="#"><img src="images/personalSettings.png"/><span>Personal Settings</span></a></li>
-						<li><a href="#"><img src="images/inbox.png"/><span>Inbox</span></a></li>
-						<li><a href="<%=userService.createLogoutURL(request.getRequestURI())%>"><img src="images/logout.png"/><span>Logout</span></a></li>
-					</ul>
+					<jsp:include page="menu.jsp" />
 				</div>
 			</header>
 
