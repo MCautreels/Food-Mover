@@ -3,15 +3,15 @@ package org.rhok.foodmover.entities;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.management.RuntimeErrorException;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.mail.MailService.Message;
 
 public class FoodListingNotification extends BaseEntity {
 	public static final String NOTIFICATION_KEY = "Notification";
@@ -45,24 +45,32 @@ public class FoodListingNotification extends BaseEntity {
 		entity.setProperty(NOTIFICATION_TYPE_KEY, type);
 	}
 
-	public void setRadiusKm(int radius) {
+	public void setRadiusKm(Long radius) {
 		entity.setProperty(RADIUS_KEY, radius);
 	}
 
 	public float getLat() {
-		return ((Float) entity.getProperty(LAT_KEY)).floatValue();
+		Object lat = entity.getProperty(LAT_KEY);
+		if (lat instanceof Double) {
+			lat = ((Double) lat).floatValue();
+		}
+		return (Float) lat;
 	}
 
 	public float getLongitude() {
-		return ((Float) entity.getProperty(LONGITUDE_KEY)).floatValue();
+		Object lng = entity.getProperty(LONGITUDE_KEY);
+		if (lng instanceof Double) {
+			lng = ((Double) lng).floatValue();
+		}
+		return (Float) lng;
 	}
 
 	public String getNotificationType() {
 		return (String) entity.getProperty(NOTIFICATION_TYPE_KEY);
 	}
 
-	public int getRadius() {
-		return ((Integer) entity.getProperty(RADIUS_KEY)).intValue();
+	public Long getRadius() {
+		return ((Long) entity.getProperty(RADIUS_KEY)).longValue();
 	}
 
 	public FoodMoverUser getOwner() {
@@ -76,6 +84,27 @@ public class FoodListingNotification extends BaseEntity {
 
 		if (getNotificationType().equals("email")) {
 			Properties props = new Properties();
+	        Session session = Session.getDefaultInstance(props, null);
+
+	        String msgBody = "...";
+
+	        try {
+	            Message msg = new MimeMessage(session);
+	            msg.setFrom(new InternetAddress("no-reply@foodmover.com", "Food Mover Notification Service"));
+	            msg.addRecipient(Message.RecipientType.TO,
+	                             new InternetAddress(this.getOwner().getRawUserObject().getEmail(), this.getOwner().getRawUserObject().getEmail()));
+	            msg.setSubject("Food has been found near your location! Go check on our site: http://foodmovr.appspot.com");
+	            msg.setText(msgBody);
+	            Transport.send(msg);
+	        } catch (AddressException e) {
+	        	e.printStackTrace();
+	        } catch (MessagingException e) {
+	        	e.printStackTrace();
+	        } catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+	        
+			/*Properties props = new Properties();
 			Session session = Session.getDefaultInstance(props, null);
 			MimeMessage msg = new MimeMessage(session);
 
@@ -88,7 +117,7 @@ public class FoodListingNotification extends BaseEntity {
 				throw new RuntimeException(e);
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
-			}
+			}*/ 
 		}
 	}
 

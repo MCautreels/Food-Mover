@@ -8,6 +8,7 @@
 	<script type="text/javascript" src="js/geo_autocomplete.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/jquery.autocomplete.css" />
 	<script type="text/javascript" src="js/listing-map.js"></script>
+	<script type="text/javascript" src="js/geo-location.js"></script>
 	<script type="text/javascript" src="js/jquery.rsv.js"></script>
 	
 	<script type="text/javascript">
@@ -62,6 +63,24 @@
 			
 			return false;
 		}
+		
+		function afterHtml5Geocoding(coordinates) {
+			latLng = coordinates;
+			updateMap(coordinates, "Your location");
+		}
+		
+		function updateMap(latLng, address) {
+			var marker = new google.maps.Marker(
+				{
+					position : latLng,
+					map : map,
+					title : "Your location: "
+						+ address
+				});
+
+			map.setCenter(latLng);
+			map.setZoom(15);
+		};
 	</script>
 	<% 
 	String quantity = "";
@@ -84,8 +103,6 @@
 		
 	} %>
 	
-	<h1>Create Listing</h1>
-	
 	<div id="dialog-message" style="display: none;" title="Saved succesfully">
 		<p>
 			<span class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
@@ -95,6 +112,11 @@
 	
 	<div id="userDetails" style="width: 310px; float: left; margin-right: 5px;">
 		<h1><%=heading%></h1>
+		
+		<article>
+			<p>Finding your location: <span id="status">checking...</span></p>
+		</article>
+		
 		<form id="create-listing-form">
 			<label for="quantity">Quantity</label> 
 			<input class="required number" type="text" id="quantity" value="<%=quantity%>" /><br />
