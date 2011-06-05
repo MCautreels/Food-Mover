@@ -26,18 +26,18 @@
 			});
 		});
 	</script>
-	<div id="userDetails" style="width: 260px; margin-left: auto; margin-right: auto ;">
+	<div id="userDetails" style="width: 310px; float: left; margin-right: 5px;">
 		<form id="create-listing-form">
 			<label for="quantity">Quantity</label> 
 			<input type="text" id="quantity" /><br />
 			
 			<label for="description">Description</label><br />
-			<textarea id="description" rows="10" cols="25"></textarea><br />
+			<textarea id="description" style="margin-left: 8px;" rows="10" cols="25"></textarea><br />
 	
 			<label for="location">Location</label>
-			<input type="text" width="150px" id="location" /><br />
-			<div id="googlemap" style="width: 250px; height: 250px"></div><br />
+			<input type="text" id="location" /><br />
 			<input type="submit" value="Create" />
 		</form>
 	</div>
+	<div id="googlemap" style="width: 250px; height: 250px; float: left;" ></div><br />
 <jsp:include page="templates/footer.jsp" />	
