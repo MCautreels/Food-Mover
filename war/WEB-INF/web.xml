@@ -14,6 +14,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	</servlet-mapping>
 	
 	<servlet>
+		<servlet-name>Notifications</servlet-name>
+		<servlet-class>org.rhok.foodmover.api.NotificationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Notifications</servlet-name>
+		<url-pattern>/api/v1/notification</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>Listing</servlet-name>
 		<servlet-class>org.rhok.foodmover.api.ListingServlet</servlet-class>
 		<init-param>

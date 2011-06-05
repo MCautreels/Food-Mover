@@ -20,7 +20,7 @@ public class NotificationServlet extends HttpServlet {
 	private static final long serialVersionUID = 2170298708623332165L;
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		if(req.getParameter("lat") == null)	throw new IllegalStateException("No lat parameter set");
 		if(req.getParameter("lng") == null)	throw new IllegalStateException("No lng parameter set");

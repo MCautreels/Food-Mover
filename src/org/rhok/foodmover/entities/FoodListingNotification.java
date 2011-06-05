@@ -70,6 +70,10 @@ public class FoodListingNotification extends BaseEntity {
 	}
 
 	public void notifyUser(FoodListing listing) {
+		if (! closeEnoughTo(listing)) {
+			return;
+		}
+		
 		if (getNotificationType().equals("email")) {
 			Properties props = new Properties();
 			Session session = Session.getDefaultInstance(props, null);
@@ -87,5 +91,23 @@ public class FoodListingNotification extends BaseEntity {
 			}
 			
 		}
+	}
+
+	private boolean closeEnoughTo(FoodListing listing) {
+		// Haversine formula
+		// http://www.movable-type.co.uk/scripts/latlong.html
+		final int EARTH_RADIUS_KM = 6371;
+		float deltaLat = getLat() - listing.getLat();
+		float deltaLng = getLongitude() - listing.getLongitude();
+		
+		double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) 
+					+ Math.cos(Math.toRadians(listing.getLat())) * Math.cos(Math.toRadians(getLat()))
+							* Math.sin(deltaLng/2) * Math.sin(deltaLng / 2);
+		
+		double c = Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		
+		double distance = EARTH_RADIUS_KM * c;
+		
+		return getRadius() < distance;
 	}
 }
