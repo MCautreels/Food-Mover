@@ -31,7 +31,7 @@
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 		<link rel="stylesheet" href="css/style.css"/>
-		<link rel="stylesheet" type="text/css" href="ss/style.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
         <link rel="stylesheet" href="css/pageStyle.css"/>
 	</head>
 	<body>
