@@ -20,8 +20,14 @@ public class FoodListing extends BaseEntity {
 	public static final String OWNER_KEY = "owner";
 	private static final int EXPIRATION_HOURS = 3;
 
+	@SuppressWarnings("deprecation")
 	public FoodListing() {
 		entity = new Entity(FOOD_LISTING_KEY);
+		setDateOfCreation(new Date());
+		
+		final Date expiration = new Date();
+		expiration.setHours(expiration.getHours() + EXPIRATION_HOURS);
+		setDateOfExpiration(expiration);
 	}
 
 	public FoodListing(Key key) {
@@ -32,14 +38,8 @@ public class FoodListing extends BaseEntity {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public FoodListing(Entity entity) {
 		this.entity = entity;
-		setDateOfCreation(new Date());
-		
-		final Date expiration = new Date();
-		expiration.setHours(expiration.getHours() + EXPIRATION_HOURS);
-		setDateOfExpiration(expiration);
 	}
 
 	public void setLat(float lat) {
@@ -99,7 +99,8 @@ public class FoodListing extends BaseEntity {
 	}
 
 	public Date getDateOfExpiration() {
-		return new Date((Long) entity.getProperty(DATE_OF_EXPIRATION_KEY));
+		final Object time = entity.getProperty(DATE_OF_EXPIRATION_KEY);
+		return new Date((Long) time);
 	}
 
 	public FoodMoverUser getOwner() {
