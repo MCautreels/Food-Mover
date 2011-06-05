@@ -75,9 +75,12 @@ public class FoodListingNotification extends BaseEntity {
 	}
 
 	public FoodMoverUser getOwner() {
-		FoodMoverUser foodMoverUser = new FoodMoverUser();
-		foodMoverUser.setUser((User) entity.getProperty(OWNER_KEY));
-		return foodMoverUser;
+		//TODO: Fix hack
+		User u = (User) entity.getProperty(OWNER_KEY);
+		FoodMoverUser result = new FoodMoverUser();
+		result.setUser(u);
+		return result;
+		//return (FoodMoverUser) entity.getProperty(OWNER_KEY);
 	}
 
 	public void notifyUser(FoodListing listing) {
