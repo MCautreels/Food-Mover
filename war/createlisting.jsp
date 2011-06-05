@@ -11,38 +11,9 @@
 	<script type="text/javascript" src="js/jquery.rsv.js"></script>
 	
 	<script type="text/javascript">
-		$().ready(function() {
-			function myOnComplete() {
-				$("#create-listing-form").submit(function() {	
-					var lat = latLng.lat();
-					var lng = latLng.lng();
-					var description = $("#description").attr("value");
-					var quantity = $("#quantity").attr("value");
-
-					var data = {
-						lat : lat,
-						lng : lng,
-						description : description,
-						quantity : quantity
-					};
-					
-					if ($.getUrlVar("listingKey") !== undefined) {
-						data["key"] = $.getUrlVar("listingKey");
-					}
-
-					$.post("/api/v1/listings", data, function(data) {
-						// if the user is editing a listing, keep them on that page. 
-						/*if (window.location.href.indexOf("listingKey") == -1) {
-							window.location = "/index.jsp";
-						}*/
-					});
-					
-					return false;
-				});
-			  }
-			
+		$().ready(function() {			
 			$("#create-listing-form").RSV({
-		          onCompleteHandler: myOnComplete,
+		          onCompleteHandler: submitForm,
 		          errorFieldClass: "errorField",
 		          displayType: "display-html",
 		          errorHTMLItemBullet: "&#8212; ",
@@ -56,6 +27,41 @@
 			
 			
 		});
+		
+		function submitForm() {
+			var lat = latLng.lat();
+			var lng = latLng.lng();
+			var description = $("#description").attr("value");
+			var quantity = $("#quantity").attr("value");
+
+			var data = {
+				lat : lat,
+				lng : lng,
+				description : description,
+				quantity : quantity
+			};
+			
+			if ($.getUrlVar("listingKey") !== undefined) {
+				data["key"] = $.getUrlVar("listingKey");
+			}
+
+			$.post("/api/v1/listings", data, function(data) {
+				// if the user is editing a listing, keep them on that page. 
+				/*if (window.location.href.indexOf("listingKey") == -1) {
+					window.location = "/index.jsp";
+				}*/		
+				$( "#dialog-message" ).dialog({
+					modal: true,
+					buttons: {
+						Ok: function() {
+							$( this ).dialog( "close" );
+						}
+					}
+				});
+			});
+			
+			return false;
+		}
 	</script>
 	<% 
 	String quantity = "";
@@ -77,6 +83,14 @@
 		submitLabel = "Update";
 		
 	} %>
+	
+	<div id="dialog-message" style="display: none;" title="Saved succesfully">
+		<p>
+			<span class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+			Your listing has successfully been created!
+		</p>
+	</div>
+	
 	<div id="userDetails" style="width: 310px; float: left; margin-right: 5px;">
 		<h1><%=heading%></h1>
 		<form id="create-listing-form">

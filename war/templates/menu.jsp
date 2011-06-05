@@ -5,7 +5,7 @@
 <%@ page import="com.google.appengine.api.users.UserServiceFactory"%>
 
 <ul>
-	<!-- <li><a href="home.jsp"><img src="images/home.png"/><span>Home</span></a></li> -->	
+	<li><a href="home.jsp"><img src="images/home.png"/><span>Home</span></a></li>
 <% 
 UserService userService = UserServiceFactory.getUserService();
 FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
@@ -14,12 +14,11 @@ if (currentUser != null) {
 		<li><a href="/createlisting.jsp"><img src="images/register.png"/>Create Listing</a></li>
 		<li><a href="#"><img src="images/myRoutes.png"/><span>My Listings</span></a></li>
 	<% } else { %>
-		<li><a href="/findlisting.jsp"><img src="images/findRoutes.png"/>Find Listing</a></li>
+		<li><a href="/findlisting.jsp"><img src="images/findRoutes.png"/>View Listing</a></li>
 	<% }     
 }
 %>
-	<!-- not yet implemented -->
-	<li><a href="/notifications.jsp"><img src="images/personalSettings.png"/><span>Notifications</span></a></li>
-	<!-- <li><a href="#"><img src="images/personalSettings.png"/><span>Personal Settings</span></a></li> -->
+	<li><a href="#"><img src="images/personalSettings.png"/><span>Personal Settings</span></a></li>
+	<li><a href="#"><img src="images/inbox.png"/><span>Inbox</span></a></li>
 	<li><a href="<%=userService.createLogoutURL(request.getRequestURI())%>"><img src="images/logout.png"/><span>Logout</span></a></li>
 </ul>
