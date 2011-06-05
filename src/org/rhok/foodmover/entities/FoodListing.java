@@ -18,28 +18,34 @@ public class FoodListing extends BaseEntity {
 	public static final String DATE_OF_CREATION_KEY = "dateOfCreation";
 	public static final String DATE_OF_EXPIRATION_KEY = "dateOfExpiration";
 	public static final String OWNER_KEY = "owner";
+	private static final int EXPIRATION_HOURS = 3;
 
 	public FoodListing() {
 		entity = new Entity(FOOD_LISTING_KEY);
 	}
-	
-	public FoodListing(Key key)
-	{
+
+	public FoodListing(Key key) {
 		try {
 			this.entity = DatastoreServiceFactory.getDatastoreService().get(key);
 		} catch (EntityNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	public FoodListing(Entity entity) {
 		this.entity = entity;
+		setDateOfCreation(new Date());
+		
+		final Date expiration = new Date();
+		expiration.setHours(expiration.getHours() + EXPIRATION_HOURS);
+		setDateOfExpiration(expiration);
 	}
 
 	public void setLat(float lat) {
 		entity.setProperty(LAT_KEY, lat);
 	}
-	
+
 	public void setOwner(FoodMoverUser owner) {
 		entity.setProperty(OWNER_KEY, owner.getRawUserObject());
 	}
@@ -55,55 +61,58 @@ public class FoodListing extends BaseEntity {
 	public void setDescription(String description) {
 		entity.setProperty(DESCRIPTION_KEY, description);
 	}
-	
+
 	public void setDateOfCreation(Date date) {
 		entity.setProperty(DATE_OF_CREATION_KEY, date.getTime());
-	}	
-	
+	}
+
 	public void setDateOfExpiration(Date date) {
 		entity.setProperty(DATE_OF_EXPIRATION_KEY, date.getTime());
 	}
 
 	public float getLat() {
-		return ((Float) entity.getProperty(LAT_KEY)).floatValue();
+		Object lat = entity.getProperty(LAT_KEY);
+		if (lat instanceof Double) {
+			lat = ((Double) lat).floatValue();
+		}
+		return (Float) lat;
 	}
 
 	public float getLongitude() {
-		return ((Float) entity.getProperty(LONGITUDE_KEY)).floatValue();
+		Object lng = entity.getProperty(LONGITUDE_KEY);
+		if (lng instanceof Double) {
+			lng = ((Double) lng).floatValue();
+		}
+		return (Float) lng;
 	}
 
 	public int getQuantity() {
-		return ((Long)entity.getProperty(QUANTITY_KEY)).intValue();
+		return ((Long) entity.getProperty(QUANTITY_KEY)).intValue();
 	}
 
 	public String getDescription() {
 		return (String) entity.getProperty(DESCRIPTION_KEY);
 	}
-	
-	public Date getDateOfCreation()
-	{
-		if(entity.getProperty(DATE_OF_CREATION_KEY) != null) {
-			return new Date((Long)entity.getProperty(DATE_OF_CREATION_KEY));
-		} else {
-			return null;
-		}
-		
+
+	public Date getDateOfCreation() {
+		return new Date((Long) entity.getProperty(DATE_OF_CREATION_KEY));
 	}
-	
-	public Date getDateOfExpiration()
-	{
-		if(entity.getProperty(DATE_OF_EXPIRATION_KEY) != null) {
-			return new Date((Long)entity.getProperty(DATE_OF_EXPIRATION_KEY));
-		} else {
-			return null;
-		}
+
+	public Date getDateOfExpiration() {
+		return new Date((Long) entity.getProperty(DATE_OF_EXPIRATION_KEY));
 	}
-	
+
 	public FoodMoverUser getOwner() {
-		//TODO: Query for the real FoodMoverUser object instead of creating a dummy one
+		// TODO: Query for the real FoodMoverUser object instead of creating a
+		// dummy one
 		FoodMoverUser owner = new FoodMoverUser();
-		owner.setUser((User)entity.getProperty(OWNER_KEY));
+		owner.setUser((User) entity.getProperty(OWNER_KEY));
 		return owner;
-		//return new FoodMoverUser() entity.getProperty(OWNER_KEY);
+		// return new FoodMoverUser() entity.getProperty(OWNER_KEY);
+	}
+
+	public boolean expired() {
+		final Date now = new Date();
+		return now.after(getDateOfCreation()) && now.before(getDateOfExpiration());
 	}
 }
