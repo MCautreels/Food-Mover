@@ -29,20 +29,21 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
+<<<<<<< HEAD
 		<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry"></script>
+=======
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+		<script type="text/javascript" src="js/url-param.js"></script>
+>>>>>>> branch 'master' of https://github.com/keithtom/Food-Mover.git
 		<link rel="stylesheet" href="css/style.css"/>
-		<link rel="stylesheet" type="text/css" href="ss/style.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
         <link rel="stylesheet" href="css/pageStyle.css"/>
 	</head>
 	<body>
 		<div id="container">
 			<header>
 				<img src="images/headerLogo.png" alt="headerLogo" />
-                <span style="float: right">
-                    <a href="#"><img src="images/flag_nl.png" alt="flag_nl" /></a>
-                    <a href="#"><img src="images/flag_en.png" alt="flag_en" /></a>
-                </span>
 				<div>
 					<jsp:include page="menu.jsp" />
 				</div>

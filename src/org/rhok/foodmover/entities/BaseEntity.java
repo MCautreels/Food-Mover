@@ -2,6 +2,7 @@ package org.rhok.foodmover.entities;
 
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
 public abstract class BaseEntity {
@@ -10,6 +11,10 @@ public abstract class BaseEntity {
 
 	public void put() {
 		DatastoreServiceFactory.getDatastoreService().put(entity);
+	}
+	
+	public void delete(){
+		DatastoreServiceFactory.getDatastoreService().delete(entity.getKey());
 	}
 	
 	public Key getKey() {
