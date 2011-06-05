@@ -52,19 +52,22 @@ public class ListingServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain");
 		
-		if(req.getParameter("lat") == null)	throw new IllegalStateException("No lat parameter set");
-		if(req.getParameter("lng") == null)	throw new IllegalStateException("No lng parameter set");	
+		List<FoodListing> foodlistings = null;
 		
-		float latitude = Float.parseFloat(req.getParameter("lat"));
-		float longitude = Float.parseFloat(req.getParameter("lng"));		
-		float distance;
-		if(req.getParameter("distance") == null){
-			distance = Float.parseFloat(this.getInitParameter("default_distance"));
-		} else {
-			distance = Float.parseFloat(req.getParameter("distance"));
+		if(req.getParameter("lat") != null && req.getParameter("lng") != null) {
+			float latitude = Float.parseFloat(req.getParameter("lat"));
+			float longitude = Float.parseFloat(req.getParameter("lng"));		
+			float distance;
+			if(req.getParameter("distance") == null){
+				distance = Float.parseFloat(this.getInitParameter("default_distance"));
+			} else {
+				distance = Float.parseFloat(req.getParameter("distance"));
+			}	
+			foodlistings = findFoodListings(longitude, latitude, distance);
 		}
-		
-		List<FoodListing> foodlistings = findFoodListings(longitude, latitude, distance);
+		else if(FoodMoverUser.getCurrentUser() != null){
+			foodlistings = getMyFoodListings();
+		}
 		
 		JSONStringer jsonStringer = new JSONStringer();
 		try {
@@ -84,6 +87,25 @@ public class ListingServlet extends HttpServlet {
 			throw new ServletException(e);
 		}
 
+	}
+	
+	public static List<FoodListing> getMyFoodListings()
+	{
+		List<FoodListing> result = new ArrayList<FoodListing>();
+		FoodMoverUser me = FoodMoverUser.getCurrentUser();
+		Query q = new Query("FoodListing");
+		q.addFilter("owner", Query.FilterOperator.EQUAL, me.getRawUserObject());
+		
+		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery prepQ = data.prepare(q);
+		
+		for (Entity found : prepQ.asIterable()) {
+			// Longitude check in memory
+			FoodListing resultItem = new FoodListing(found);
+			result.add(resultItem);
+		}
+		
+		return result;
 	}
 
 	public static List<FoodListing> findFoodListings(Float longitude, Float latitude, Float distance)
