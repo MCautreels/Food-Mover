@@ -2,18 +2,14 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="org.rhok.foodmover.entities.FoodMoverUser"%>
 
-<div id="menu">
-	<ul id="menu">
-		<li><a href="index.jsp">Home</a></li>
-		<% 
-		FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
-		if (currentUser != null) {
-			if (currentUser.isProducer()) { %>
-				<li><a href="/createListing">Create Listing</a></li>
-			<% } else { %>
-				<li><a href="/viewlistings">View Listing</a></li>
-			<% } 
-		}
-		%>
-	</ul>
-</div>
+<% 
+FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
+if (currentUser != null) {
+	if (currentUser.isProducer()) { %>
+		<li><a href="/createlisting"><img src="images/register.png"/>Create Listing</a></li>
+		<li><a href="/overview"><img src="images/myRoutes.png"/><span>My Listings</span></a></li>
+	<% } else { %>
+		<li><a href="/findlistings"><img src="images/findRoutes.png"/>View Listing</a></li>
+	<% } 
+}
+%>
