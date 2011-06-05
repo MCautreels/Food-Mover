@@ -1,3 +1,8 @@
+<%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
+<%@ page import="com.google.appengine.api.datastore.Key"%>
+<%@ page import="com.google.appengine.api.datastore.KeyFactory"%>		
+<%@ page import="org.rhok.foodmover.entities.FoodListing"%>
+
 <jsp:include page="templates/header.jsp" />	
 	<script type="text/javascript" src="js/libs/jquery.autocomplete_geomod.js"></script>
 	<script type="text/javascript" src="js/geo_autocomplete.js"></script>
@@ -43,17 +48,36 @@
 			
 		});
 	</script>
+	<% 
+	String quantity = "";
+	String description = "";
+	String location = "";
+	String heading = "Create new listing";
+	
+	String strKey = request.getParameter("listingKey");
+	if (strKey != null) {
+		Key key = KeyFactory.stringToKey(strKey);
+		FoodListing listing = new FoodListing(DatastoreServiceFactory.getDatastoreService().get(key));
+		
+		quantity = listing.getQuantity() + "";
+		description = listing.getDescription();
+		System.out.println(description);
+		location = String.format("%f, %f", listing.getLat(), listing.getLongitude());
+		
+		heading = "Edit listing";
+	} %>
 	<div id="userDetails" style="width: 310px; float: left; margin-right: 5px;">
+		<h1><%=heading%></h1>
 		<form id="create-listing-form">
 			<label for="quantity">Quantity</label> 
-			<input class="required number" type="text" id="quantity" /><br />
+			<input class="required number" type="text" id="quantity" value="<%=quantity%>" /><br />
 			
 			<label for="description">Description</label><br />
-			<textarea class="required" id="description" style="margin-left: 8px;" rows="10" cols="25"></textarea><br />
+			<textarea class="required" id="description" style="margin-left: 8px;" rows="10" cols="25"><%=description%></textarea><br />
 	
 			<label for="location">Location</label>
-			<input class="required" type="text" id="location" /><br />
-			
+
+			<input value="<%=location%>" class="required" type="text" id="location" /><br />
 			<input type="submit" value="Create" />
 			<div id="rsvErrors"></div> 
 		</form>
