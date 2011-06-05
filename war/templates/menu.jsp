@@ -19,6 +19,6 @@ if (currentUser != null) {
 	<% }     
 }
 %>
-	<li><a href="#"><img src="images/inbox.png"/>Inbox</a></li>
+	<!-- <li><a href="#"><img src="images/inbox.png"/>Inbox</a></li> -->
 	<li><a href="<%=userService.createLogoutURL(request.getRequestURI())%>"><img src="images/logout.png"/>Logout</a></li>
 </ul>
