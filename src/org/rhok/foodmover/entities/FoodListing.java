@@ -8,6 +8,7 @@ import com.google.appengine.api.users.User;
 
 public class FoodListing extends BaseEntity {
 
+	private static final String FOOD_LISTING_KEY = "FoodListing";
 	public static final String LAT_KEY = "lat";
 	public static final String LONGITUDE_KEY = "longitude";
 	public static final String QUANTITY_KEY = "quantity";
@@ -15,7 +16,7 @@ public class FoodListing extends BaseEntity {
 	public static final String OWNER_KEY = "owner";
 
 	public FoodListing() {
-		entity = new Entity("FoodListing");
+		entity = new Entity(FOOD_LISTING_KEY);
 	}
 	
 	public FoodListing(Key key)

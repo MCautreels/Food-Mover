@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.rhok.foodmover.entities.FoodListing;
+import org.rhok.foodmover.entities.FoodListingNotification;
 import org.rhok.foodmover.entities.FoodMoverUser;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -44,8 +45,22 @@ public class ListingServlet extends HttpServlet {
 		listing.setOwner(FoodMoverUser.getCurrentUser());
 
 		listing.put();
+		
+		notifyOfNewListing(listing);
 
 		writeKey(resp, listing);
+	}
+
+	private void notifyOfNewListing(FoodListing listing) {
+		Query q = new Query(FoodListingNotification.NOTIFICATION_KEY);
+		q.addFilter(FoodListingNotification.OWNER_KEY, Query.FilterOperator.EQUAL, FoodMoverUser.getCurrentUser().getRawUserObject());
+		
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery pq = datastore.prepare(q);
+		
+		for (Entity entity : pq.asIterable()) {
+			new FoodListingNotification(entity).notifyUser(listing);
+		}
 	}
 
 	private void writeKey(HttpServletResponse resp, FoodListing listing) throws IOException {
