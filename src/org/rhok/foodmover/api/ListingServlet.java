@@ -12,6 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.FoodMoverUser;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.repackaged.org.json.JSONStringer;
 
 @SuppressWarnings("serial")
@@ -46,7 +51,7 @@ public class ListingServlet extends HttpServlet {
 		// TODO: Make distance optional
 		float distance = Float.parseFloat(req.getParameter("distance"));
 
-		List<FoodListing> foodlistings = doQuery(longitude, latitude, distance);
+		List<FoodListing> foodlistings = findFoodListings(longitude, latitude, distance);
 		
 		JSONStringer jsonStringer = new JSONStringer();
 		try {
@@ -67,29 +72,30 @@ public class ListingServlet extends HttpServlet {
 		}
 
 	}
-	
-	public static List<FoodListing> doQuery(Float longitude, Float latitude, Float distance)
+
+	public static List<FoodListing> findFoodListings(Float longitude, Float latitude, Float distance)
 	{
 		List<FoodListing> result = new ArrayList<FoodListing>();
 		
-		FoodListing fl1 = new FoodListing();
-		fl1.setLat(1);
-		fl1.setLongitude(1);
-		fl1.setDescription("Food listing 1");
-		fl1.setQuantity(2);
+		Query q = new Query("FoodListing");
 		
-		FoodListing fl2 = new FoodListing();
-		fl2.setLat(1);
-		fl2.setLongitude(1);
-		fl2.setDescription("Food listing 2");
-		fl2.setQuantity(2);
+		// Latitude check with query
+		q.addFilter(FoodListing.LAT_KEY, Query.FilterOperator.GREATER_THAN_OR_EQUAL, latitude - distance);
+		q.addFilter(FoodListing.LAT_KEY, Query.FilterOperator.LESS_THAN_OR_EQUAL, latitude + distance);
 		
-		result.add(fl1);
-		result.add(fl2);
+		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery prepQ = data.prepare(q);
+		
+		for (Entity found : prepQ.asIterable()) {
+			// Longitude check in memory
+			FoodListing resultItem = new FoodListing(found);
+			
+			if(resultItem.getLongitude() >= (longitude -distance) && resultItem.getLongitude() <= (longitude + distance)){
+				result.add(resultItem);
+			}
+		}
 		
 		return result;
-		
-		//throw new RuntimeException("Not implemented");
 	}
 
 }

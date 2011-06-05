@@ -17,6 +17,12 @@
 		<meta charset="utf-8"/>
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<%
+			if(request.getAttribute("title") == null || request.getAttribute("title").equals("")) { %>
+				<title>Food Mover</title>
+			<% } else { %>
+				<title>${title}</title>
+			<% } %>
 		<title>Food Mover</title>
 		<meta name="description" content=""/>
 		<meta name="author" content=""/>
@@ -38,15 +44,15 @@
                 </span>
 				<div>
 					<ul>
-						<li><a href="/createlisting"><img src="images/register.png"/><span>Add Listing</span></a></li>
+						<jsp:include page="menu.jsp" />	
 						<li><a href="/overview"><img src="images/myRoutes.png"/><span>My Listings</span></a></li>
-						<li><a href="/route/search"><img src="images/findRoutes.png"/><span>Find Food</span></a></li>
                         <li><a href="#"><img src="images/personalSettings.png"/><span>Personal Settings</span></a></li>
 						<li><a href="#"><img src="images/inbox.png"/><span>Inbox</span></a></li>
 						<li><a href="<%=userService.createLogoutURL(request.getRequestURI())%>"><img src="images/logout.png"/><span>Logout</span></a></li>
 					</ul>
 				</div>
 			</header>
+
 			
 			
 			

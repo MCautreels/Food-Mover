@@ -4,6 +4,9 @@
 <%@ page import="com.google.appengine.api.users.UserService"%>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory"%>
 
+
+<% request.setAttribute("title", "Food Mover"); %>
+<script type="text/javascript" src="js/setUserType.js" ></script>
 <%
 	UserService userService = UserServiceFactory.getUserService();
 	User user = userService.getCurrentUser();
@@ -63,7 +66,8 @@
 					<p>Use different clients like Smartphones, Dumbphones, computer, netbook, ...</p>
 				</div>
 				<div class="bottomBox">
-					<a class="largeButton" id="loginButton" href="<%=userService.createLoginURL(request.getRequestURI())%>">Login</a>
+					<a class="largeButton" id="loginProducerButton" href="<%=userService.createLoginURL("/?producer=true")%>">Login as a Producer</a>
+					<a class="largeButton" id="loginConsumerButton" href="<%=userService.createLoginURL("/?consumer=true")%>">Login as a Consumer</a>
 				</div>
 			</div>
 		</div>
