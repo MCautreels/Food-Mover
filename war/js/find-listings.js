@@ -72,7 +72,7 @@ function getListing(lat, lng){
         	}
 
         	if(oldResponse != null && oldResponse != json) {
-        		oldReponse = json;
+        		oldResponse = json;
         	
 	            // create table from json
 	        	$(json).each(function(index, value) {
@@ -108,13 +108,15 @@ function getListing(lat, lng){
 	        		$('#listingsTable').append(newRow);
 	        	});
         	}
+	        
+        	if(oldResponse != null && oldResponse != json) {
+	        	var latlngbounds = new google.maps.LatLngBounds( );
+	        	for ( var i = 0; i < latLngs.length; i++ ) {
+	        		latlngbounds.extend( latLngs[ i ] );
+	        	}
 	        	
-        	var latlngbounds = new google.maps.LatLngBounds( );
-        	for ( var i = 0; i < latLngs.length; i++ ) {
-        	  latlngbounds.extend( latLngs[ i ] );
+	        	map.fitBounds(latlngbounds);
         	}
-        	
-        	map.fitBounds(latlngbounds);
         	
         	if(doRefresh) {
         		t = setTimeout("getListing(" + lat + "," + lng + ")", 2000);

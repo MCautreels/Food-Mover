@@ -19,7 +19,7 @@
 	<input type="text" id="location" />
 </div>
 <div id="wrap">
-	<div id="googlemap"></div>
+	<div id="googlemap" style="height: 400px;"></div>
 	<table id="listingsTable">
 		<tr class="header">
 			<th>Description</th>

@@ -28,7 +28,7 @@ function getListing(){
         	var latLngs = new Array();
         	var latlng = new google.maps.LatLng(50.7, 4.5);
     		var myOptions = {
-    				zoom : 1,
+    				zoom : 4,
     				center : latlng,
     				mapTypeId : google.maps.MapTypeId.ROADMAP
     			};

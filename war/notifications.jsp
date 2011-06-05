@@ -30,7 +30,7 @@ $().ready(function() {
 			width : 300,
 			scroll : true,
 			scrollHeight : 330
-		}).result(updateMap);
+		}).result(afterGeocoding);
 	
 	$("#add-notification-form").submit(function() {
 		var lat = latlng.lat();
@@ -65,6 +65,10 @@ $().ready(function() {
 		return false;
 	});
 });
+
+function afterGeocoding(_event, _data){
+    updateMap(_data.geometry.location, _data.formatted_address);
+};
 
 function afterHtml5Geocoding(latlng) {
 	updateMap(latlng, "Your location");
