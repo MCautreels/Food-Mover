@@ -44,19 +44,25 @@
 			
 			if ($.getUrlVar("listingKey") !== undefined) {
 				data["key"] = $.getUrlVar("listingKey");
-			}
-
-			$.post("/api/v1/listings", data, function(data) {
-				$( "#dialog-message" ).dialog({
-					modal: true,
-					buttons: {
-						Ok: function() {
-							$( this ).dialog( "close" );
-						}
 				
-					}
+				$.post('/api/v1/listings?action=put', data, function(result) {
+						alert("Listing updated");
 				});
-			});
+				
+			} else {
+				
+				$.post("/api/v1/listings", data, function(data) {
+					$( "#dialog-message" ).dialog({
+						modal: true,
+						buttons: {
+							Ok: function() {
+								$( this ).dialog( "close" );
+							}
+					
+						}
+					});
+				});
+			}
 			
 			return false;
 		}

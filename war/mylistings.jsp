@@ -53,6 +53,7 @@ function getListing(){
         		var newRow = '<tr class="entry">';
         		newRow += '<td>' + value.description + '</td>';
         		newRow += '<td>' + value.quantity + '</td>';
+        		newRow += '<td><a href="createlisting.jsp?listingKey=' + value.id + '">Edit</a></td>';
         		newRow += '<td><input type="hidden" value="' + value.id + '" /><button class="delete">Delete</button>'; 
         		
         		$('#listings').append(newRow);

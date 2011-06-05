@@ -33,11 +33,16 @@ public class ListingServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (req.getParameter("action").equals("delete")) {
-			doDelete(req, resp);
-			return;
+		if (req.getParameter("action") != null) {
+			if (req.getParameter("action").equals("delete")) {
+				doDelete(req, resp);
+				return;
+			} else if (req.getParameter("action").equals("put")) {
+				doPut(req, resp);
+				return;
+			}
 		}
-		
+
 		checkParams(req);
 
 		float lat = Float.parseFloat(req.getParameter("lat"));
@@ -52,8 +57,8 @@ public class ListingServlet extends HttpServlet {
 		listing.setDescription(description);
 		listing.setQuantity(quantity);
 		listing.setOwner(FoodMoverUser.getCurrentUser());
-		
-		if(req.getParameter("expirationdate") != null){
+
+		if (req.getParameter("expirationdate") != null) {
 			SimpleDateFormat formatter = new SimpleDateFormat("mm/dd/yyyy");
 			try {
 				listing.setDateOfExpiration(formatter.parse((req.getParameter("expirationdate"))));
@@ -61,9 +66,9 @@ public class ListingServlet extends HttpServlet {
 				throw new ServletException("expirationdate must be of format mm/dd/yyyy");
 			}
 		}
-		
+
 		listing.put();
-		
+
 		notifyOfNewListing(listing);
 
 		writeKey(resp, listing);
@@ -71,11 +76,12 @@ public class ListingServlet extends HttpServlet {
 
 	private void notifyOfNewListing(FoodListing listing) {
 		Query q = new Query(FoodListingNotification.NOTIFICATION_KEY);
-		q.addFilter(FoodListingNotification.OWNER_KEY, Query.FilterOperator.EQUAL, FoodMoverUser.getCurrentUser().getRawUserObject());
-		
+		q.addFilter(FoodListingNotification.OWNER_KEY, Query.FilterOperator.EQUAL, FoodMoverUser.getCurrentUser()
+				.getRawUserObject());
+
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		PreparedQuery pq = datastore.prepare(q);
-		
+
 		for (Entity entity : pq.asIterable()) {
 			new FoodListingNotification(entity).notifyUser(listing);
 		}
@@ -106,18 +112,24 @@ public class ListingServlet extends HttpServlet {
 		Key key = KeyFactory.stringToKey(strKey);
 		try {
 			FoodListing listing = new FoodListing(DatastoreServiceFactory.getDatastoreService().get(key));
+			
+			assert listing.getKey().equals(key) : "Keys don't match";
+			
+			System.out.println(req.getParameter("lng"));
+			
 			listing.setDescription(req.getParameter("description"));
 			listing.setLat(Float.parseFloat(req.getParameter("lat")));
-			listing.setLongitude(Float.parseFloat(req.getParameter("long")));
+			listing.setLongitude(Float.parseFloat(req.getParameter("lng")));
 			listing.setQuantity(Integer.parseInt(req.getParameter("quantity")));
 			listing.setOwner(FoodMoverUser.getCurrentUser());
-			
+
 			listing.put();
-			
+
 			writeKey(resp, listing);
-			
+
 		} catch (EntityNotFoundException e) {
-			throw new IllegalStateException("key does not match any current food listing. Did you use KeyFactory.keyToString() correctly?");
+			throw new IllegalStateException(
+					"key does not match any current food listing. Did you use KeyFactory.keyToString() correctly?");
 		}
 	}
 
@@ -130,11 +142,14 @@ public class ListingServlet extends HttpServlet {
 		new FoodListing(key).delete();
 		System.out.println("deleted");
 
-//		if (fl.getOwner().getRawUserObject().equals(FoodMoverUser.getCurrentUser().getRawUserObject())) {
-//			fl.delete();
-//		} else {
-//			throw new IllegalAccessError("You have to be the owner of the listing");
-//		}
+		// if
+		// (fl.getOwner().getRawUserObject().equals(FoodMoverUser.getCurrentUser().getRawUserObject()))
+		// {
+		// fl.delete();
+		// } else {
+		// throw new
+		// IllegalAccessError("You have to be the owner of the listing");
+		// }
 	}
 
 	@Override
@@ -169,15 +184,12 @@ public class ListingServlet extends HttpServlet {
 		try {
 			jsonStringer.array();
 			for (FoodListing foodListing : foodlistings) {
-				jsonStringer.object()
-				.key("id").value(KeyFactory.keyToString(foodListing.getKey()))
-				.key("dateofcreation").value(foodListing.getDateOfCreation().getTime())
-				.key("lat").value(foodListing.getLat())
-				.key("lng").value(foodListing.getLongitude())
-				.key("description").value(foodListing.getDescription())
-				.key("quantity").value(foodListing.getQuantity())
-				.key("email").value(foodListing.getOwner().getRawUserObject().getEmail());
-				if(foodListing.getDateOfExpiration() != null) {
+				jsonStringer.object().key("id").value(KeyFactory.keyToString(foodListing.getKey()))
+						.key("dateofcreation").value(foodListing.getDateOfCreation().getTime()).key("lat")
+						.value(foodListing.getLat()).key("lng").value(foodListing.getLongitude()).key("description")
+						.value(foodListing.getDescription()).key("quantity").value(foodListing.getQuantity())
+						.key("email").value(foodListing.getOwner().getRawUserObject().getEmail());
+				if (foodListing.getDateOfExpiration() != null) {
 					jsonStringer.key("dateofexpiration").value(foodListing.getDateOfExpiration().getTime());
 				}
 				jsonStringer.endObject();
@@ -202,11 +214,11 @@ public class ListingServlet extends HttpServlet {
 
 		for (Entity found : prepQ.asIterable()) {
 			FoodListing resultItem = new FoodListing(found);
-			
+
 			if (resultItem.expired()) {
 				continue;
 			}
-			
+
 			result.add(resultItem);
 		}
 
@@ -229,7 +241,7 @@ public class ListingServlet extends HttpServlet {
 			// Longitude check in memory
 			FoodListing resultItem = new FoodListing(found);
 
-			if (! resultItem.expired() && resultItem.getLongitude() >= (longitude - distance)
+			if (!resultItem.expired() && resultItem.getLongitude() >= (longitude - distance)
 					&& resultItem.getLongitude() <= (longitude + distance)) {
 				result.add(resultItem);
 			}
