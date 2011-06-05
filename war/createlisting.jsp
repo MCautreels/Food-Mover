@@ -46,16 +46,13 @@
 			}
 
 			$.post("/api/v1/listings", data, function(data) {
-				// if the user is editing a listing, keep them on that page. 
-				/*if (window.location.href.indexOf("listingKey") == -1) {
-					window.location = "/index.jsp";
-				}*/		
 				$( "#dialog-message" ).dialog({
 					modal: true,
 					buttons: {
 						Ok: function() {
 							$( this ).dialog( "close" );
 						}
+				
 					}
 				});
 			});
