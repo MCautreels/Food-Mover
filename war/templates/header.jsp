@@ -38,10 +38,6 @@
 		<div id="container">
 			<header>
 				<img src="images/headerLogo.png" alt="headerLogo" />
-                <span style="float: right">
-                    <a href="#"><img src="images/flag_nl.png" alt="flag_nl" /></a>
-                    <a href="#"><img src="images/flag_en.png" alt="flag_en" /></a>
-                </span>
 				<div>
 					<jsp:include page="menu.jsp" />
 				</div>

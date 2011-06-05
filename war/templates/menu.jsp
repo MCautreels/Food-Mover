@@ -5,7 +5,7 @@
 <%@ page import="com.google.appengine.api.users.UserServiceFactory"%>
 
 <ul>
-	<li><a href="home.jsp"><img src="images/home.png"/><span>Home</span></a></li>
+	<!-- <li><a href="home.jsp"><img src="images/home.png"/><span>Home</span></a></li> -->	
 <% 
 UserService userService = UserServiceFactory.getUserService();
 FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
@@ -18,7 +18,7 @@ if (currentUser != null) {
 	<% }     
 }
 %>
-	<li><a href="#"><img src="images/personalSettings.png"/><span>Personal Settings</span></a></li>
-	<li><a href="#"><img src="images/inbox.png"/><span>Inbox</span></a></li>
+	<!-- not yet implemented -->
+	<!-- <li><a href="#"><img src="images/personalSettings.png"/><span>Personal Settings</span></a></li> -->
 	<li><a href="<%=userService.createLogoutURL(request.getRequestURI())%>"><img src="images/logout.png"/><span>Logout</span></a></li>
 </ul>
