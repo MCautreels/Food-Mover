@@ -14,11 +14,11 @@ if (currentUser != null) {
 		<li><a href="/mylistings.jsp"><img src="images/myRoutes.png"/>My Listings</a></li>
 		<li><a href="/createlisting.jsp"><img src="images/register.png"/>Create Listing</a></li>
 	<% } else { %>
-		<li><a href="/findlisting.jsp"><img src="images/findRoutes.png"/>View Listing</a></li>
+		<li><a href="/findlisting.jsp"><img src="images/findRoutes.png"/>Find Listing</a></li>
 		<li><a href="notifications.jsp"><img src="images/personalSettings.png"/>Notification Settings</a></li>
 	<% }     
 }
 %>
-	<li><a href="#"><img src="images/inbox.png"/>Inbox</a></li>
+	<!-- <li><a href="#"><img src="images/inbox.png"/>Inbox</a></li> -->
 	<li><a href="<%=userService.createLogoutURL(request.getRequestURI())%>"><img src="images/logout.png"/>Logout</a></li>
 </ul>

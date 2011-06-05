@@ -12,6 +12,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.users.User;
 
 public class FoodListingNotification extends BaseEntity {
 	public static final String NOTIFICATION_KEY = "Notification";
@@ -74,7 +75,9 @@ public class FoodListingNotification extends BaseEntity {
 	}
 
 	public FoodMoverUser getOwner() {
-		return (FoodMoverUser) entity.getProperty(OWNER_KEY);
+		FoodMoverUser foodMoverUser = new FoodMoverUser();
+		foodMoverUser.setUser((User) entity.getProperty(OWNER_KEY));
+		return foodMoverUser;
 	}
 
 	public void notifyUser(FoodListing listing) {
