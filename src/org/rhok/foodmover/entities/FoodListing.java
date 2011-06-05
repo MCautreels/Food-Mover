@@ -114,6 +114,6 @@ public class FoodListing extends BaseEntity {
 
 	public boolean expired() {
 		final Date now = new Date();
-		return now.after(getDateOfCreation()) && now.before(getDateOfExpiration());
+		return !(now.after(getDateOfCreation()) && now.before(getDateOfExpiration()));
 	}
 }
