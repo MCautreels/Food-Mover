@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.rhok.foodmover.entities.FoodMoverUser;
-import org.rhok.foodmover.entities.Notification;
+import org.rhok.foodmover.entities.FoodListingNotification;
 
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -32,7 +32,7 @@ public class NotificationServlet extends HttpServlet {
 		int radius = Integer.parseInt(req.getParameter("radius").toString());
 		String type = req.getParameter("type").toString();
 		
-		Notification notification = new Notification();
+		FoodListingNotification notification = new FoodListingNotification();
 		notification.setLat(lat);
 		notification.setLongitude(longitude);
 		notification.setNotificationType(type);

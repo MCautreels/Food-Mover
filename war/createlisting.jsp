@@ -12,22 +12,31 @@
 	
 	<script type="text/javascript">
 		$().ready(function() {
-			function myOnComplete()
-			  {
+			function myOnComplete() {
 				$("#create-listing-form").submit(function() {	
 					var lat = latLng.lat();
 					var lng = latLng.lng();
 					var description = $("#description").attr("value");
 					var quantity = $("#quantity").attr("value");
 
-					$.post("/api/v1/listings", {
+					var data = {
 						lat : lat,
 						lng : lng,
 						description : description,
 						quantity : quantity
-					}, function(data) {
-						window.location = "/index.jsp";
+					};
+					
+					if ($.getUrlVar("listingKey") !== undefined) {
+						data["key"] = $.getUrlVar("listingKey");
+					}
+
+					$.post("/api/v1/listings", data, function(data) {
+						// if the user is editing a listing, keep them on that page. 
+						/*if (window.location.href.indexOf("listingKey") == -1) {
+							window.location = "/index.jsp";
+						}*/
 					});
+					
 					return false;
 				});
 			  }
@@ -53,6 +62,7 @@
 	String description = "";
 	String location = "";
 	String heading = "Create new listing";
+	String submitLabel = "Create";
 	
 	String strKey = request.getParameter("listingKey");
 	if (strKey != null) {
@@ -64,6 +74,8 @@
 		location = String.format("%f, %f", listing.getLat(), listing.getLongitude());
 		
 		heading = "Edit listing";
+		submitLabel = "Update";
+		
 	} %>
 	<div id="userDetails" style="width: 310px; float: left; margin-right: 5px;">
 		<h1><%=heading%></h1>
@@ -77,7 +89,7 @@
 			<label for="location">Location</label>
 
 			<input value="<%=location%>" class="required" type="text" id="location" /><br />
-			<input type="submit" value="Create" />
+			<input type="submit" value="<%=submitLabel%>" />
 			<div id="rsvErrors"></div> 
 		</form>
 	</div>

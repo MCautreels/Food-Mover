@@ -18,7 +18,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-class>org.rhok.foodmover.api.ListingServlet</servlet-class>
 		<init-param>
       		<param-name>default_distance</param-name>
-      		<param-value>10</param-value>
+      		<param-value>5</param-value>
         </init-param>
 	</servlet>
 	<servlet-mapping>
