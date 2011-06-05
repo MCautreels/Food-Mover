@@ -7,6 +7,9 @@
 <script type="text/javascript" src="js/geo_autocomplete.js"></script>
 <link rel="stylesheet" type="text/css" href="css/jquery.autocomplete.css" />
 <script type="text/javascript" src="js/jquery.rsv.js"></script>
+<script type="text/javascript" src="js/geo-location.js"></script>
+
+<h1>Notification Settings</h1>
 
 <article>
   <p>Finding your location: <span id="status">checking...</span></p>
@@ -63,65 +66,27 @@ $().ready(function() {
 	});
 });
 
-function updateMap(_event, _data) {
-	latlng = _data.geometry.location;
+function afterHtml5Geocoding(latlng) {
+	updateMap(latlng, "Your location");
+}
+
+function updateMap(latLng, address) {
 
 	var marker = new google.maps.Marker(
 		{
-			position : latlng,
+			position : latLng,
 			map : map,
 			title : "Your location: "
-				+ _data.formatted_address
+				+ address
 		});
 
-	map.setCenter(latlng);
+	map.setCenter(latLng);
 	map.setZoom(15);
 };
 
-function success(position) {
-  var s = document.querySelector('#status');
-  
-  if (s.className == 'success') {
-    // not sure why we're hitting this twice in FF, I think it's to do with a cached result coming back    
-    return;
-  }
-  
-  s.innerHTML = "found you!";
-  s.className = 'success';
-  
-  latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-  var myOptions = {
-    zoom: 15,
-    center: latlng,
-    navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  };
-  map = new google.maps.Map(document.getElementById("googlemap"), myOptions);
-  
-  var marker = new google.maps.Marker({
-      position: latlng, 
-      map: map, 
-      title:"You are here!"
-  });
-}
-
-function error(msg) {
-  var s = document.querySelector('#status');
-  s.innerHTML = typeof msg == 'string' ? msg : "failed";
-  s.className = 'fail';
-  
-  // console.log(arguments);
-}
-
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(success, error);
-} else {
-  error('not supported');
-}
-
 </script>
 
-<div id="dialog-message" title="Saved succesfully">
+<div id="dialog-message" style="display: none;" title="Saved succesfully">
 	<p>
 		<span class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
 		Your notification settings have successfully been saved
