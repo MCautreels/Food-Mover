@@ -102,6 +102,7 @@ public class ListingServlet extends HttpServlet {
 			jsonStringer.array();
 			for (FoodListing foodListing : foodlistings) {
 				jsonStringer.object()
+				.key("id").value(KeyFactory.keyToString(foodListing.getKey()))
 				.key("lat").value(foodListing.getLat())
 				.key("lng").value(foodListing.getLongitude())
 				.key("description").value(foodListing.getDescription())
