@@ -10,6 +10,7 @@ User user = userService.getCurrentUser();
 %>
 
 <jsp:include page="templates/header.jsp" />
+<script type="text/javascript" src="js/setUserType.js" ></script>
 Welcome,
 <%=user.getNickname()%>! (You can <a href="<%=userService.createLogoutURL(request.getRequestURI())%>">sign out</a>.)
 <jsp:include page="templates/footer.jsp" />	
