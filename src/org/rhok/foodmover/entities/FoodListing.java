@@ -1,6 +1,10 @@
 package org.rhok.foodmover.entities;
 
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.users.User;
 
 public class FoodListing extends BaseEntity {
 
@@ -12,6 +16,15 @@ public class FoodListing extends BaseEntity {
 
 	public FoodListing() {
 		entity = new Entity("FoodListing");
+	}
+	
+	public FoodListing(Key key)
+	{
+		try {
+			this.entity = DatastoreServiceFactory.getDatastoreService().get(key);
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public FoodListing(Entity entity) {
@@ -55,6 +68,10 @@ public class FoodListing extends BaseEntity {
 	}
 	
 	public FoodMoverUser getOwner() {
-		return (FoodMoverUser) entity.getProperty(OWNER_KEY);
+		//TODO: Query for the real FoodMoverUser object instead of creating a dummy one
+		FoodMoverUser owner = new FoodMoverUser();
+		owner.setUser((User)entity.getProperty(OWNER_KEY));
+		return owner;
+		//return new FoodMoverUser() entity.getProperty(OWNER_KEY);
 	}
 }
