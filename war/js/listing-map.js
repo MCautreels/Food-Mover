@@ -17,6 +17,7 @@ $().ready(function() {
 			scrollHeight : 330
 		}).result(function(_event, _data) {
 			latLng = _data.geometry.location;
+
 			var marker = new google.maps.Marker(
 					{
 						position : latLng,
@@ -31,27 +32,12 @@ $().ready(function() {
 	});
 
 function resetMap() {
-	
-	var lat = 50.7;
-	var lng = 4.5;
-	
-	var locRegex = /(-?\d+(\.\d+)?), (-?\d+(\.\d+)?)/;
-	var locVal = $("#location").val();
-	if (locRegex.test(locVal)) {
-		lat = parseFloat(locVal.substring(0, locVal.indexOf(',')));
-		lng = parseFloat(locVal.substring(locVal.indexOf(',') + 1, locVal.length));
-	}
-	
-	   var myLatlng = new google.maps.LatLng(lat, lng);
-	    var myOptions = {
-	      zoom: 15,
-	      center: myLatlng,
-	      mapTypeId: google.maps.MapTypeId.ROADMAP
-	    }
-	    map = new google.maps.Map(document.getElementById("googlemap"), myOptions);
-	    
-	    var marker = new google.maps.Marker({
-	        position: myLatlng, 
-	        map: map,
-	    });   
+	var latlng = new google.maps.LatLng(50.7, 4.5);
+	var myOptions = {
+		zoom : 1,
+		center : latlng,
+		mapTypeId : google.maps.MapTypeId.ROADMAP
+	};
+	map = new google.maps.Map(document.getElementById("googlemap"),
+			myOptions);
 }

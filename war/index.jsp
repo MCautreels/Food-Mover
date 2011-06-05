@@ -6,6 +6,7 @@
 
 
 <% request.setAttribute("title", "Food Mover"); %>
+
 <%
 	UserService userService = UserServiceFactory.getUserService();
 	User user = userService.getCurrentUser();
@@ -24,7 +25,7 @@
 		<meta charset="utf-8"/>
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-		<title>DriveConnect</title>
+		<title>Food Mover</title>
 		<meta name="description" content=""/>
 		<meta name="author" content=""/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>

@@ -4,24 +4,7 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-	<servlet>
-		<servlet-name>FoodMover</servlet-name>
-		<servlet-class>org.rhok.foodmover.FoodMoverServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FoodMover</servlet-name>
-		<url-pattern>/foodmover</url-pattern>
-	</servlet-mapping>
 	
-	<servlet>
-		<servlet-name>Notifications</servlet-name>
-		<servlet-class>org.rhok.foodmover.api.NotificationServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Notifications</servlet-name>
-		<url-pattern>/api/v1/notification</url-pattern>
-	</servlet-mapping>
-
 	<servlet>
 		<servlet-name>Listing</servlet-name>
 		<servlet-class>org.rhok.foodmover.api.ListingServlet</servlet-class>
@@ -51,6 +34,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet-mapping>
 		<servlet-name>IsConsumer</servlet-name>
 		<url-pattern>/api/v1/isConsumer</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Notification</servlet-name>
+		<servlet-class>org.rhok.foodmover.api.NotificationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Notification</servlet-name>
+		<url-pattern>/api/v1/notification</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>
