@@ -12,7 +12,7 @@ FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
 if (currentUser != null) {
 	if (currentUser.isProducer()) { %>
 		<li><a href="/createlisting.jsp"><img src="images/register.png"/>Create Listing</a></li>
-		<li><a href="#"><img src="images/myRoutes.png"/><span>My Listings</span></a></li>
+		<li><a href="/mylistings.jsp"><img src="images/myRoutes.png"/><span>My Listings</span></a></li>
 	<% } else { %>
 		<li><a href="/findlisting.jsp"><img src="images/findRoutes.png"/>View Listing</a></li>
 	<% }     
