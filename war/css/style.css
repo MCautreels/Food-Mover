@@ -13,7 +13,10 @@ menu, nav, section, summary, time, mark, audio, video {
   font-size:100%;
   vertical-align:baseline;
   background:transparent;
-}                  
+}
+th, td {
+	margin: 2px;
+}
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { 
     display:block;
 }

@@ -38,13 +38,44 @@ function updateMap(_event, _data) {
 function getListing(lat, lng){
     $.ajax({
         type: "GET",
-        url: "/api/v1/listings?lat=" + lat + "&lng=" + lng + "&distance=1",
-        dataType: "JSON",
+        url: "/api/v1/listings?lat=" + lat + "&lng=" + lng,
+        dataType: "json",
         success: function(json){
+
+        	$('.entry').remove();
+        	var latLngs = new Array();
+        	var startingPoint = new google.maps.LatLng(lat, lng);
+        	latLngs[0] = startingPoint;
+        	var i = 1;
             // create table from json
-            $.each(json, function(i, listing){
-                $("#listings").children().append("<tr><td>" + listing["description"] + "</td><td>0.2 mi</td><td>" + listing["quantity"] + "</td></tr>");
-            });
+        	$(json).each(function(index, value) {
+        		var destinationPoint = new google.maps.LatLng(value.lat, value.lng);
+        		var distance = google.maps.geometry.spherical.computeDistanceBetween(startingPoint, destinationPoint);
+        		distance = Math.round(distance * 0.000621371192);
+        		var marker = new google.maps.Marker(
+				{
+					position : destinationPoint,
+					map : map,
+					title : "A possible destination",
+					icon: new google.maps.MarkerImage("images/marker_blue.png"),
+				});
+        		
+        		latLngs[i] = destinationPoint;
+        		i++;
+        		
+        		var newRow = '<tr class="entry">';
+        		newRow += '<td>' + value.description + '</td>';
+        		newRow += '<td>' + distance + ' miles</td>';
+        		newRow += '<td>' + value.quantity + '</td>';
+        		
+        		$('#listings').append(newRow);
+        	});
+        	
+        	var latlngbounds = new google.maps.LatLngBounds( );
+        	for ( var i = 0; i < latLngs.length; i++ ) {
+        	  latlngbounds.extend( latLngs[ i ] );
+        	}
+        	map.fitBounds( latlngbounds );
         }
     });
 };
