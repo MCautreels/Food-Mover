@@ -183,7 +183,6 @@ public class ListingServlet extends HttpServlet {
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}
-
 	}
 
 	public static List<FoodListing> getMyFoodListings() {
@@ -196,8 +195,12 @@ public class ListingServlet extends HttpServlet {
 		PreparedQuery prepQ = data.prepare(q);
 
 		for (Entity found : prepQ.asIterable()) {
-			// Longitude check in memory
 			FoodListing resultItem = new FoodListing(found);
+			
+			if (resultItem.expired()) {
+				continue;
+			}
+			
 			result.add(resultItem);
 		}
 
@@ -220,7 +223,7 @@ public class ListingServlet extends HttpServlet {
 			// Longitude check in memory
 			FoodListing resultItem = new FoodListing(found);
 
-			if (resultItem.getLongitude() >= (longitude - distance)
+			if (! resultItem.expired() && resultItem.getLongitude() >= (longitude - distance)
 					&& resultItem.getLongitude() <= (longitude + distance)) {
 				result.add(resultItem);
 			}

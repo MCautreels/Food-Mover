@@ -89,7 +89,6 @@ public class FoodListingNotification extends BaseEntity {
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
 			}
-
 		}
 	}
 

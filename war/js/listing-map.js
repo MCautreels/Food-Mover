@@ -29,6 +29,8 @@ $().ready(function() {
 			map.setCenter(latLng);
 			map.setZoom(15);
 		});
+	
+	$("#location").val(map.getCenter().toString());
 	});
 
 function resetMap() {
