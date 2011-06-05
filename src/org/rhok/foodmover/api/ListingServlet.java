@@ -1,7 +1,10 @@
 package org.rhok.foodmover.api;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,6 +24,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.repackaged.org.json.JSONException;
 import com.google.appengine.repackaged.org.json.JSONStringer;
+import com.google.appengine.repackaged.org.json.JSONWriter;
 
 @SuppressWarnings("serial")
 public class ListingServlet extends HttpServlet {
@@ -41,10 +45,20 @@ public class ListingServlet extends HttpServlet {
 		
 		FoodListing listing = new FoodListing();
 		listing.setLat(lat);
+		listing.setDateOfCreation(new Date());
 		listing.setLongitude(longitude);
 		listing.setDescription(description);
 		listing.setQuantity(quantity);
 		listing.setOwner(FoodMoverUser.getCurrentUser());
+		
+		if(req.getParameter("expirationdate") != null){
+			SimpleDateFormat formatter = new SimpleDateFormat("mm/dd/yyyy");
+			try {
+				listing.setDateOfExpiration(formatter.parse((req.getParameter("expirationdate"))));
+			} catch (ParseException e) {
+				throw new ServletException("expirationdate must be of format mm/dd/yyyy");
+			}
+		}
 		
 		listing.put();
 		
@@ -103,10 +117,15 @@ public class ListingServlet extends HttpServlet {
 			for (FoodListing foodListing : foodlistings) {
 				jsonStringer.object()
 				.key("id").value(KeyFactory.keyToString(foodListing.getKey()))
+				.key("dateofcreation").value(foodListing.getDateOfCreation().getTime())
 				.key("lat").value(foodListing.getLat())
 				.key("lng").value(foodListing.getLongitude())
 				.key("description").value(foodListing.getDescription())
-				.key("quantity").value(foodListing.getQuantity()).endObject();
+				.key("quantity").value(foodListing.getQuantity());
+				if(foodListing.getDateOfExpiration() != null) {
+					jsonStringer.key("dateofexpiration").value(foodListing.getDateOfExpiration().getTime());
+				}
+				jsonStringer.endObject();
 			}
 			jsonStringer.endArray();
 			

@@ -1,5 +1,7 @@
 package org.rhok.foodmover.entities;
 
+import java.util.Date;
+
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -12,6 +14,8 @@ public class FoodListing extends BaseEntity {
 	public static final String LONGITUDE_KEY = "longitude";
 	public static final String QUANTITY_KEY = "quantity";
 	public static final String DESCRIPTION_KEY = "descr";
+	public static final String DATE_OF_CREATION_KEY = "dateOfCreation";
+	public static final String DATE_OF_EXPIRATION_KEY = "dateOfExpiration";
 	public static final String OWNER_KEY = "owner";
 
 	public FoodListing() {
@@ -50,6 +54,14 @@ public class FoodListing extends BaseEntity {
 	public void setDescription(String description) {
 		entity.setProperty(DESCRIPTION_KEY, description);
 	}
+	
+	public void setDateOfCreation(Date date) {
+		entity.setProperty(DATE_OF_CREATION_KEY, date.getTime());
+	}	
+	
+	public void setDateOfExpiration(Date date) {
+		entity.setProperty(DATE_OF_EXPIRATION_KEY, date.getTime());
+	}
 
 	public float getLat() {
 		return ((Double) entity.getProperty(LAT_KEY)).floatValue();
@@ -65,6 +77,25 @@ public class FoodListing extends BaseEntity {
 
 	public String getDescription() {
 		return (String) entity.getProperty(DESCRIPTION_KEY);
+	}
+	
+	public Date getDateOfCreation()
+	{
+		if(entity.getProperty(DATE_OF_CREATION_KEY) != null) {
+			return new Date((Long)entity.getProperty(DATE_OF_CREATION_KEY));
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Date getDateOfExpiration()
+	{
+		if(entity.getProperty(DATE_OF_EXPIRATION_KEY) != null) {
+			return new Date((Long)entity.getProperty(DATE_OF_EXPIRATION_KEY));
+		} else {
+			return null;
+		}
 	}
 	
 	public FoodMoverUser getOwner() {
