@@ -4,14 +4,18 @@ import com.google.appengine.api.datastore.Entity;
 
 public class FoodListing extends BaseEntity {
 
-	private static final String LAT_KEY = "lat";
-	private static final String LONGITUDE_KEY = "longitude";
-	private static final String QUANTITY_KEY = "quantity";
-	private static final String DESCRIPTION_KEY = "descr";
-	private static final String OWNER_KEY = "owner";
+	public static final String LAT_KEY = "lat";
+	public static final String LONGITUDE_KEY = "longitude";
+	public static final String QUANTITY_KEY = "quantity";
+	public static final String DESCRIPTION_KEY = "descr";
+	public static final String OWNER_KEY = "owner";
 
 	public FoodListing() {
 		entity = new Entity("FoodListing");
+	}
+	
+	public FoodListing(Entity entity) {
+		this.entity = entity;
 	}
 
 	public void setLat(float lat) {
@@ -35,15 +39,15 @@ public class FoodListing extends BaseEntity {
 	}
 
 	public float getLat() {
-		return (Float) entity.getProperty(LAT_KEY);
+		return ((Double) entity.getProperty(LAT_KEY)).floatValue();
 	}
 
 	public float getLongitude() {
-		return (Float) entity.getProperty(LONGITUDE_KEY);
+		return ((Double) entity.getProperty(LONGITUDE_KEY)).floatValue();
 	}
 
 	public int getQuantity() {
-		return (Integer) entity.getProperty(QUANTITY_KEY);
+		return ((Long)entity.getProperty(QUANTITY_KEY)).intValue();
 	}
 
 	public String getDescription() {

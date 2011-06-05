@@ -12,6 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.FoodMoverUser;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.repackaged.org.json.JSONStringer;
 
 @SuppressWarnings("serial")
@@ -46,7 +51,7 @@ public class ListingServlet extends HttpServlet {
 		// TODO: Make distance optional
 		float distance = Float.parseFloat(req.getParameter("distance"));
 
-		List<FoodListing> foodlistings = doQuery(longitude, latitude, distance);
+		List<FoodListing> foodlistings = doQuery2(longitude, latitude, distance);
 		
 		JSONStringer jsonStringer = new JSONStringer();
 		try {
@@ -90,6 +95,31 @@ public class ListingServlet extends HttpServlet {
 		return result;
 		
 		//throw new RuntimeException("Not implemented");
+	}
+	
+	public static List<FoodListing> doQuery2(Float longitude, Float latitude, Float distance)
+	{
+		List<FoodListing> result = new ArrayList<FoodListing>();
+		
+		Query q = new Query("FoodListing");
+		
+		// Latitude check with query
+		q.addFilter(FoodListing.LAT_KEY, Query.FilterOperator.GREATER_THAN_OR_EQUAL, latitude - distance);
+		q.addFilter(FoodListing.LAT_KEY, Query.FilterOperator.LESS_THAN_OR_EQUAL, latitude + distance);
+		
+		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery prepQ = data.prepare(q);
+		
+		for (Entity found : prepQ.asIterable()) {
+			// Longitude check in memory
+			FoodListing resultItem = new FoodListing(found);
+			
+			if(resultItem.getLongitude() >= (longitude -distance) && resultItem.getLongitude() <= (longitude + distance)){
+				result.add(resultItem);
+			}
+		}
+		
+		return result;
 	}
 
 }
