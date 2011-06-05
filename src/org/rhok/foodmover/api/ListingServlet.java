@@ -15,9 +15,11 @@ import org.rhok.foodmover.entities.FoodMoverUser;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.repackaged.org.json.JSONException;
 import com.google.appengine.repackaged.org.json.JSONStringer;
 
 @SuppressWarnings("serial")
@@ -50,6 +52,23 @@ public class ListingServlet extends HttpServlet {
 	}
 	
 	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
+	throws ServletException, IOException {
+		if(req.getParameter("key") == null)	throw new IllegalStateException("No key parameter set");
+		
+		Key key = KeyFactory.stringToKey(req.getParameter("key"));
+		FoodListing fl = new FoodListing(key);
+		
+		if(fl.getOwner().getRawUserObject().equals(FoodMoverUser.getCurrentUser().getRawUserObject()))
+		{
+			fl.delete();
+		}
+		else {
+			throw new IllegalAccessError("You have to be the owner of the listing");
+		}
+	}
+	
+	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain");
 		
@@ -69,12 +88,21 @@ public class ListingServlet extends HttpServlet {
 		else if(FoodMoverUser.getCurrentUser() != null){
 			foodlistings = getMyFoodListings();
 		}
+		else {
+			JSONStringer jsonStringer = new JSONStringer();
+			try {
+				resp.getWriter().println(jsonStringer.object().key("ERROR").value("Not logged in / No lng or lat set").toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		JSONStringer jsonStringer = new JSONStringer();
 		try {
 			jsonStringer.array();
 			for (FoodListing foodListing : foodlistings) {
 				jsonStringer.object()
+				.key("id").value(KeyFactory.keyToString(foodListing.getKey()))
 				.key("lat").value(foodListing.getLat())
 				.key("lng").value(foodListing.getLongitude())
 				.key("description").value(foodListing.getDescription())
@@ -133,5 +161,6 @@ public class ListingServlet extends HttpServlet {
 		
 		return result;
 	}
+	
 
 }
