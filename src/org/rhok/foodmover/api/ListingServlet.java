@@ -48,7 +48,7 @@ public class ListingServlet extends HttpServlet {
 		
 		listing.put();
 		
-		resp.getWriter().println(listing.getKey());
+		resp.getWriter().println(KeyFactory.keyToString(listing.getKey()));
 	}
 	
 	@Override

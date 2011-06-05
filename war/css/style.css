@@ -127,3 +127,8 @@ body{margin-bottom: 40px; };
   h2, h3{ page-break-after: avoid; }
 }
 
+.errorField {
+	  background-color: #ffffcc;
+	  border: 1px solid #aa0000;
+	  color: #aa0000;
+	}
