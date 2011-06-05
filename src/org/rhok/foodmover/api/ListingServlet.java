@@ -66,7 +66,7 @@ public class ListingServlet extends HttpServlet {
 	}
 
 	private void notifyOfNewListing(FoodListing listing) {
-		Query q = new Query(FoodListingNotification.NOTIFICATION_KEY);
+		/*Query q = new Query(FoodListingNotification.NOTIFICATION_KEY);
 		q.addFilter(FoodListingNotification.OWNER_KEY, Query.FilterOperator.EQUAL, FoodMoverUser.getCurrentUser().getRawUserObject());
 		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -74,7 +74,25 @@ public class ListingServlet extends HttpServlet {
 		
 		for (Entity entity : pq.asIterable()) {
 			new FoodListingNotification(entity).notifyUser(listing);
-		}
+		}*/
+		
+		Query q = new Query("Notification");
+
+		// Latitude check with query
+		q.addFilter(FoodListingNotification.LAT_KEY, Query.FilterOperator.GREATER_THAN_OR_EQUAL, listing.getLat() - 10);
+		q.addFilter(FoodListingNotification.LAT_KEY, Query.FilterOperator.LESS_THAN_OR_EQUAL, listing.getLat() + 10);
+
+		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery prepQ = data.prepare(q);
+
+		for (Entity found : prepQ.asIterable()) {
+			// Longitude check in memory
+			FoodListingNotification notification = new FoodListingNotification(found);
+			if (notification.getLongitude() >= (listing.getLongitude() - 10)
+					&& notification.getLongitude() <= (listing.getLongitude() + 10)) {
+				notification.notifyUser(listing);
+			}
+		}		
 	}
 
 	private void writeKey(HttpServletResponse resp, FoodListing listing) throws IOException {
