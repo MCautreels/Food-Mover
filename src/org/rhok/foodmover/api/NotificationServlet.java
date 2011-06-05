@@ -29,7 +29,7 @@ public class NotificationServlet extends HttpServlet {
 		
 		float lat = Float.parseFloat(req.getParameter("lat"));
 		float longitude = Float.parseFloat(req.getParameter("lng"));
-		int radius = Integer.parseInt(req.getParameter("radius").toString());
+		Long radius = Long.parseLong(req.getParameter("radius").toString());
 		String type = req.getParameter("type").toString();
 		
 		FoodListingNotification notification = new FoodListingNotification();

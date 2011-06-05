@@ -1,4 +1,4 @@
-var t; //Repetition variable
+var t; // Repetition variable
 
 $().ready(function() {
 	resetMap();
@@ -6,7 +6,7 @@ $().ready(function() {
 	$('#location').geo_autocomplete(
 		new google.maps.Geocoder,
 		{
-			mapkey : 'ABQIAAAAbnvDoAoYOSW2iqoXiGTpYBTIx7cuHpcaq3fYV4NM0BaZl8OxDxS9pQpgJkMv0RxjVl6cDGhDNERjaQ', //TODO
+			mapkey : 'ABQIAAAAbnvDoAoYOSW2iqoXiGTpYBTIx7cuHpcaq3fYV4NM0BaZl8OxDxS9pQpgJkMv0RxjVl6cDGhDNERjaQ', // TODO
 			selectFirst : true,
 			minChars : 3,
 			delay : 100,
@@ -79,9 +79,19 @@ function getListing(lat, lng){
 				{
 					position : destinationPoint,
 					map : map,
-					title : "A possible destination",
+					title : "OMG Free Food!",
 					icon: new google.maps.MarkerImage("images/marker_blue.png"),
 				});
+        		
+        		var infoWindow = new google.maps.InfoWindow({
+        			content: "<p><strong>Description from producer:</strong> " + value['description'] 
+        						+ "</p><p><strong>Quantity:</strong>" + value['quantity'] + "</p>"
+        		
+        		});
+        		
+        		google.maps.event.addListener(marker, 'click', function() {
+        			infoWindow.open(map, marker);
+        		});
         		
         		latLngs[i] = destinationPoint;
         		i++;
@@ -89,9 +99,9 @@ function getListing(lat, lng){
         		var newRow = '<tr class="entry">';
         		newRow += '<td>' + value.description + '</td>';
         		newRow += '<td>' + distance + ' miles</td>';
-        		newRow += '<td>' + value.quantity + '</td>';
+        		newRow += '<td>' + value.quantity + '</td></tr>';
         		
-        		$('#listings').append(newRow);
+        		$('#listingsTable').append(newRow);
         	});
         	
         	var latlngbounds = new google.maps.LatLngBounds( );

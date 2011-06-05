@@ -5,6 +5,7 @@
 <script type="text/javascript" src="js/libs/jquery.autocomplete_geomod.js"></script>
 <script type="text/javascript" src="js/geo_autocomplete.js"></script>
 <link rel="stylesheet" type="text/css" href="css/jquery.autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="css/find-listings.css" />
 <script type="text/javascript" src="js/find-listings.js"></script>
 <script type="text/javascript" src="js/geo-location.js"></script>
 <h1>Find listing</h1>
@@ -13,10 +14,13 @@
   <p>Finding your location: <span id="status">checking...</span></p>
 </article>
 
-<div id="findListing" style="width: 308px; float: left; margin-right: 5px;">
+<div id="locationSearch">
 	<label for="quantity">Find food near:</label> 
 	<input type="text" id="location" />
-	<table id="listings" style="border: 1px solid black; width: 306px;">
+</div>
+<div id="wrap">
+	<div id="googlemap"></div>
+	<table id="listingsTable">
 		<tr class="header">
 			<th>Description</th>
 			<th>Distance</th>
@@ -24,5 +28,5 @@
 		</tr>
 	</table>
 </div>
-<div id="googlemap" style="width: 250px; height: 250px; float: left;"></div>
+
 <jsp:include page="templates/footer.jsp" />
