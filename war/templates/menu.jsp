@@ -5,6 +5,7 @@
 <%@ page import="com.google.appengine.api.users.UserServiceFactory"%>
 
 <ul>
+	<li><a href="home.jsp"><img src="images/home.png"/><span>Home</span></a></li>
 <% 
 UserService userService = UserServiceFactory.getUserService();
 FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
@@ -13,7 +14,7 @@ if (currentUser != null) {
 		<li><a href="/createlisting.jsp"><img src="images/register.png"/>Create Listing</a></li>
 		<li><a href="#"><img src="images/myRoutes.png"/><span>My Listings</span></a></li>
 	<% } else { %>
-		<li><a href="/findlisting.jsp"><img src="images/findRoutes.png"/>View Listing</a></li>
+		<li><a href="/findlisting.jsp"><img src="images/findRoutes.png"/>Find Listing</a></li>
 	<% }     
 }
 %>
