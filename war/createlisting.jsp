@@ -11,23 +11,27 @@
 	<script type="text/javascript" src="js/jquery-validation-1.8.1/jquery.validate.js"></script>
 	<script type="text/javascript">
 		$().ready(function() {
-			$("#create-listing-form").submit(function() {
-				
+			$("#create-listing-form").validate({
+				messages : {
+					quantity : "Please fill in a quantity.",
+					required : "This is a required field."
+				}
+			});
+			
+			$("#create-listing-form").submit(function() {	
 				var lat = latLng.lat();
 				var lng = latLng.lng();
 				var description = $("#description").attr("value");
 				var quantity = $("#quantity").attr("value");
-				
-				$.post("/api/v1/listings", 
-					{ 
-						lat: lat, 
-						lng: lng, 
-						description: description, 
-						quantity: quantity
-					}, function(data) {
-						//TODO: show message or redirect
-					}
-				);
+
+				$.post("/api/v1/listings", {
+					lat : lat,
+					lng : lng,
+					description : description,
+					quantity : quantity
+				}, function(data) {
+					window.location = "/index.jsp";
+				});
 				return false;
 			});
 		});
