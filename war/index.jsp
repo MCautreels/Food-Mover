@@ -4,6 +4,7 @@
 <%@ page import="com.google.appengine.api.users.UserService"%>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory"%>
 
+<%! String title = "Food Mover"; %>
 <jsp:include page="templates/header.jsp" />
 <script type="text/javascript" src="/js/setUserType.js" ></script>
 <%

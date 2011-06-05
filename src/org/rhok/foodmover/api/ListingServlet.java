@@ -51,7 +51,7 @@ public class ListingServlet extends HttpServlet {
 		// TODO: Make distance optional
 		float distance = Float.parseFloat(req.getParameter("distance"));
 
-		List<FoodListing> foodlistings = doQuery2(longitude, latitude, distance);
+		List<FoodListing> foodlistings = findFoodListings(longitude, latitude, distance);
 		
 		JSONStringer jsonStringer = new JSONStringer();
 		try {
@@ -72,32 +72,8 @@ public class ListingServlet extends HttpServlet {
 		}
 
 	}
-	
-	public static List<FoodListing> doQuery(Float longitude, Float latitude, Float distance)
-	{
-		List<FoodListing> result = new ArrayList<FoodListing>();
-		
-		FoodListing fl1 = new FoodListing();
-		fl1.setLat(1);
-		fl1.setLongitude(1);
-		fl1.setDescription("Food listing 1");
-		fl1.setQuantity(2);
-		
-		FoodListing fl2 = new FoodListing();
-		fl2.setLat(1);
-		fl2.setLongitude(1);
-		fl2.setDescription("Food listing 2");
-		fl2.setQuantity(2);
-		
-		result.add(fl1);
-		result.add(fl2);
-		
-		return result;
-		
-		//throw new RuntimeException("Not implemented");
-	}
-	
-	public static List<FoodListing> doQuery2(Float longitude, Float latitude, Float distance)
+
+	public static List<FoodListing> findFoodListings(Float longitude, Float latitude, Float distance)
 	{
 		List<FoodListing> result = new ArrayList<FoodListing>();
 		
