@@ -49,7 +49,6 @@
 		
 		quantity = listing.getQuantity() + "";
 		description = listing.getDescription();
-		System.out.println(description);
 		location = String.format("%f, %f", listing.getLat(), listing.getLongitude());
 		
 		heading = "Edit listing";
