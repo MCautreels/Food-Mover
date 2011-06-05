@@ -25,6 +25,12 @@ public class ListingServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		
+		if(req.getParameter("lat") == null)	throw new IllegalStateException("No lat parameter set");
+		if(req.getParameter("lng") == null)	throw new IllegalStateException("No lng parameter set");
+		if(req.getParameter("description") == null)	throw new IllegalStateException("No description parameter set");
+		if(req.getParameter("quantity") == null) throw new IllegalStateException("No quantity parameter set");
+		
 		float lat = Float.parseFloat(req.getParameter("lat"));
 		float longitude = Float.parseFloat(req.getParameter("lng"));
 		String description = req.getParameter("description");
@@ -45,12 +51,19 @@ public class ListingServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain");
+		
+		if(req.getParameter("lat") == null)	throw new IllegalStateException("No lat parameter set");
+		if(req.getParameter("lng") == null)	throw new IllegalStateException("No lng parameter set");	
+		
 		float latitude = Float.parseFloat(req.getParameter("lat"));
-		float longitude = Float.parseFloat(req.getParameter("lng"));
-
-		// TODO: Make distance optional
-		float distance = Float.parseFloat(req.getParameter("distance"));
-
+		float longitude = Float.parseFloat(req.getParameter("lng"));		
+		float distance;
+		if(req.getParameter("distance") == null){
+			distance = Float.parseFloat(this.getInitParameter("default_distance"));
+		} else {
+			distance = Float.parseFloat(req.getParameter("distance"));
+		}
+		
 		List<FoodListing> foodlistings = findFoodListings(longitude, latitude, distance);
 		
 		JSONStringer jsonStringer = new JSONStringer();
