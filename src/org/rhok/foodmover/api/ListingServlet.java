@@ -48,7 +48,7 @@ public class ListingServlet extends HttpServlet {
 		
 		resp.getWriter().println(KeyFactory.keyToString(listing.getKey()));
 	}
-
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain");
