@@ -27,6 +27,11 @@ public class FoodMoverUser extends BaseEntity {
 		entity.setProperty(USER_KEY, user);
 	}
 	
+	public User getRawUserObject()
+	{
+		return (User) entity.getProperty(USER_KEY);
+	}
+	
 	public void setIsProducer(boolean isProducer) {
 		entity.setProperty(USER_TYPE_KEY, isProducer);
 	}
@@ -43,7 +48,9 @@ public class FoodMoverUser extends BaseEntity {
 		PreparedQuery prepQ = data.prepare(q);
 		
 		for (Entity found : prepQ.asIterable()) {
-			return new FoodMoverUser(found);
+			FoodMoverUser result = new FoodMoverUser(found);
+			result.setUser(currRawUser);
+			return result;
 		}
 		
 		return null;

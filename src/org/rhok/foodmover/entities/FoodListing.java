@@ -23,7 +23,7 @@ public class FoodListing extends BaseEntity {
 	}
 	
 	public void setOwner(FoodMoverUser owner) {
-		entity.setProperty(OWNER_KEY, owner);
+		entity.setProperty(OWNER_KEY, owner.getRawUserObject());
 	}
 
 	public void setLongitude(float longitude) {
