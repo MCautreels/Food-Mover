@@ -3,6 +3,7 @@
 	<script type="text/javascript" src="js/geo_autocomplete.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/jquery.autocomplete.css" />
 	<script type="text/javascript" src="js/listing-map.js"></script>
+	<script type="text/javascript" src="js/jquery-validation-1.8.1/jquery.validate.js"></script>
 	<script type="text/javascript">
 		$().ready(function() {
 			$("#create-listing-form").submit(function() {
@@ -29,13 +30,13 @@
 	<div id="userDetails" style="width: 310px; float: left; margin-right: 5px;">
 		<form id="create-listing-form">
 			<label for="quantity">Quantity</label> 
-			<input type="text" id="quantity" /><br />
+			<input class="required number" type="text" id="quantity" /><br />
 			
 			<label for="description">Description</label><br />
-			<textarea id="description" style="margin-left: 8px;" rows="10" cols="25"></textarea><br />
+			<textarea class="required" id="description" style="margin-left: 8px;" rows="10" cols="25"></textarea><br />
 	
 			<label for="location">Location</label>
-			<input type="text" id="location" /><br />
+			<input class="required" type="text" id="location" /><br />
 			<input type="submit" value="Create" />
 		</form>
 	</div>
