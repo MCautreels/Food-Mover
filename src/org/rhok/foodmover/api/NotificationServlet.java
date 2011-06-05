@@ -36,7 +36,7 @@ public class NotificationServlet extends HttpServlet {
 		notification.setLat(lat);
 		notification.setLongitude(longitude);
 		notification.setNotificationType(type);
-		notification.setRadius(radius);
+		notification.setRadiusKm(radius);
 		notification.setOwner(FoodMoverUser.getCurrentUser());
 		
 		notification.put();

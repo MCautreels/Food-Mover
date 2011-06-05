@@ -45,16 +45,16 @@ public class FoodListingNotification extends BaseEntity {
 		entity.setProperty(NOTIFICATION_TYPE_KEY, type);
 	}
 
-	public void setRadius(int radius) {
+	public void setRadiusKm(int radius) {
 		entity.setProperty(RADIUS_KEY, radius);
 	}
 
 	public float getLat() {
-		return ((Double) entity.getProperty(LAT_KEY)).floatValue();
+		return ((Float) entity.getProperty(LAT_KEY)).floatValue();
 	}
 
 	public float getLongitude() {
-		return ((Double) entity.getProperty(LONGITUDE_KEY)).floatValue();
+		return ((Float) entity.getProperty(LONGITUDE_KEY)).floatValue();
 	}
 
 	public String getNotificationType() {
@@ -70,15 +70,15 @@ public class FoodListingNotification extends BaseEntity {
 	}
 
 	public void notifyUser(FoodListing listing) {
-		if (! closeEnoughTo(listing)) {
+		if (!closeEnoughTo(listing)) {
 			return;
 		}
-		
+
 		if (getNotificationType().equals("email")) {
 			Properties props = new Properties();
 			Session session = Session.getDefaultInstance(props, null);
 			MimeMessage msg = new MimeMessage(session);
-			
+
 			try {
 				msg.setFrom(new InternetAddress("nick.heiner@gmail.com", "FoodMovr"));
 				msg.setSubject("[FoodMovr] New Listing");
@@ -89,25 +89,26 @@ public class FoodListingNotification extends BaseEntity {
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
 			}
-			
+
 		}
 	}
 
-	private boolean closeEnoughTo(FoodListing listing) {
-		// Haversine formula
+	public boolean closeEnoughTo(FoodListing listing) {
+		// Spherical Law of Cosines
 		// http://www.movable-type.co.uk/scripts/latlong.html
 		final int EARTH_RADIUS_KM = 6371;
-		float deltaLat = getLat() - listing.getLat();
-		float deltaLng = getLongitude() - listing.getLongitude();
-		
-		double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) 
-					+ Math.cos(Math.toRadians(listing.getLat())) * Math.cos(Math.toRadians(getLat()))
-							* Math.sin(deltaLng/2) * Math.sin(deltaLng / 2);
-		
-		double c = Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		
-		double distance = EARTH_RADIUS_KM * c;
-		
-		return getRadius() < distance;
+
+		double lat1 = Math.toRadians(listing.getLat());
+		double lng1 = Math.toRadians(listing.getLongitude());
+
+		double lat2 = Math.toRadians(getLat());
+		double lng2 = Math.toRadians(getLongitude());
+
+		// distance is in KM
+		double distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2)
+				* Math.cos(lng2 - lng1))
+				* EARTH_RADIUS_KM;
+
+		return distance < getRadius();
 	}
 }

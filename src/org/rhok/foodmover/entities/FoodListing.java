@@ -65,11 +65,11 @@ public class FoodListing extends BaseEntity {
 	}
 
 	public float getLat() {
-		return ((Double) entity.getProperty(LAT_KEY)).floatValue();
+		return ((Float) entity.getProperty(LAT_KEY)).floatValue();
 	}
 
 	public float getLongitude() {
-		return ((Double) entity.getProperty(LONGITUDE_KEY)).floatValue();
+		return ((Float) entity.getProperty(LONGITUDE_KEY)).floatValue();
 	}
 
 	public int getQuantity() {

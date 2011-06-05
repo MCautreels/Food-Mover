@@ -11,6 +11,9 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.rhok.foodmover.entities.FoodListing;
+import org.rhok.foodmover.entities.FoodListingNotification;
+
 import static org.junit.Assert.*;
 
 public class LocalDatastoreTest {
@@ -35,6 +38,40 @@ public class LocalDatastoreTest {
         ds.put(new Entity("yam"));
         ds.put(new Entity("yam"));
         assertEquals(2, ds.prepare(new Query("yam")).countEntities(Builder.withLimit(10)));
+    }
+    
+    @Test
+    public void testNotificationDistance() {
+    	float lat = 3;
+    	float lng = 4;
+    	FoodListingNotification notification = new FoodListingNotification();
+    	
+    	notification.setLat(lat);
+    	notification.setLongitude(lng);
+    	notification.setRadiusKm(200);
+    	
+    	FoodListing listing = new FoodListing();
+    	listing.setLat(lat + 1);
+    	listing.setLongitude(lng + 1);
+    	
+    	assertTrue(notification.closeEnoughTo(listing));
+    }
+    
+    @Test
+    public void testNotificationDistanceTooFar() {
+    	float lat = 3;
+    	float lng = 4;
+    	FoodListingNotification notification = new FoodListingNotification();
+    	
+    	notification.setLat(lat);
+    	notification.setLongitude(lng);
+    	notification.setRadiusKm(2);
+    	
+    	FoodListing listing = new FoodListing();
+    	listing.setLat(lat + 100);
+    	listing.setLongitude(lng + 100);
+    	
+    	assertFalse(notification.closeEnoughTo(listing));
     }
 
     @Test
