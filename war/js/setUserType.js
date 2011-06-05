@@ -3,10 +3,10 @@ $(document).ready(
 			
 		if ($.getUrlVar("producer") === "true") {
 			$.post("/api/v1/isProducer");
-			window.location.replace("/");
+			window.location = "/mylistings.jsp";
 		} else if ($.getUrlVar("consumer") === "true") {
 			$.post("/api/v1/isConsumer");
-			window.location.replace("/");
+			window.location = "/findlisting.jsp";
 		}  
 		
 			

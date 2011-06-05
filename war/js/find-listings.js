@@ -1,4 +1,5 @@
 var t; // Repetition variable
+var oldResponse = new Object(); 
 
 $().ready(function() {
 	resetMap();
@@ -69,41 +70,45 @@ function getListing(lat, lng){
         		
         		doRefresh = false;
         	}
+
+        	if(oldResponse != null && oldResponse != json) {
+        		oldReponse = json;
         	
-            // create table from json
-        	$(json).each(function(index, value) {
-        		var destinationPoint = new google.maps.LatLng(value.lat, value.lng);
-        		var distance = google.maps.geometry.spherical.computeDistanceBetween(startingPoint, destinationPoint);
-        		distance = Math.round(distance * 0.000621371192);
-        		var marker = new google.maps.Marker(
-				{
-					position : destinationPoint,
-					map : map,
-					title : "OMG Free Food!",
-					icon: new google.maps.MarkerImage("images/marker_blue.png"),
-				});
-        		
-        		var infoWindow = new google.maps.InfoWindow({
-        			content: "<p><strong>Description from producer:</strong> " + value['description'] 
-        						+ "</p><p><strong>Quantity:</strong>" + value['quantity'] + "</p>"
-        		
-        		});
-        		
-        		google.maps.event.addListener(marker, 'click', function() {
-        			infoWindow.open(map, marker);
-        		});
-        		
-        		latLngs[i] = destinationPoint;
-        		i++;
-        		
-        		var newRow = '<tr class="entry">';
-        		newRow += '<td>' + value.description + '</td>';
-        		newRow += '<td>' + distance + ' miles</td>';
-        		newRow += '<td>' + value.quantity + '</td></tr>';
-        		
-        		$('#listingsTable').append(newRow);
-        	});
-        	
+	            // create table from json
+	        	$(json).each(function(index, value) {
+	        		var destinationPoint = new google.maps.LatLng(value.lat, value.lng);
+	        		var distance = google.maps.geometry.spherical.computeDistanceBetween(startingPoint, destinationPoint);
+	        		distance = Math.round(distance * 0.000621371192);
+	        		var marker = new google.maps.Marker(
+					{
+						position : destinationPoint,
+						map : map,
+						title : "OMG Free Food!",
+						icon: new google.maps.MarkerImage("images/marker_blue.png"),
+					});
+	        		
+	        		var infoWindow = new google.maps.InfoWindow({
+	        			content: "<p><strong>Description from producer:</strong> " + value['description'] 
+	        						+ "</p><p><strong>Quantity:</strong>" + value['quantity'] + "</p>"
+	        		
+	        		});
+	        		
+	        		google.maps.event.addListener(marker, 'click', function() {
+	        			infoWindow.open(map, marker);
+	        		});
+	        		
+	        		latLngs[i] = destinationPoint;
+	        		i++;
+	        		
+	        		var newRow = '<tr class="entry">';
+	        		newRow += '<td>' + value.description + '</td>';
+	        		newRow += '<td>' + distance + ' miles</td>';
+	        		newRow += '<td>' + value.quantity + '</td></tr>';
+	        		
+	        		$('#listingsTable').append(newRow);
+	        	});
+        	}
+	        	
         	var latlngbounds = new google.maps.LatLngBounds( );
         	for ( var i = 0; i < latLngs.length; i++ ) {
         	  latlngbounds.extend( latLngs[ i ] );
