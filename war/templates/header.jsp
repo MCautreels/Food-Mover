@@ -7,6 +7,7 @@
 <link rel="stylesheet" type="text/css" href="css/layout.css">
 <title>Food Mover</title>
 <link rel="stylesheet" type="text/css" href="css/layout.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 </head>
 <body>
 	<div id="container">
