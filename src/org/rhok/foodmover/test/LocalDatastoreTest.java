@@ -48,7 +48,7 @@ public class LocalDatastoreTest {
     	
     	notification.setLat(lat);
     	notification.setLongitude(lng);
-    	notification.setRadiusKm(200);
+    	notification.setRadiusKm(new Long(200));
     	
     	FoodListing listing = new FoodListing();
     	listing.setLat(lat + 1);
@@ -65,7 +65,7 @@ public class LocalDatastoreTest {
     	
     	notification.setLat(lat);
     	notification.setLongitude(lng);
-    	notification.setRadiusKm(2);
+    	notification.setRadiusKm(new Long(2));
     	
     	FoodListing listing = new FoodListing();
     	listing.setLat(lat + 100);
