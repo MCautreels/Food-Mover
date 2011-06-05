@@ -6,6 +6,7 @@
 
 
 <% request.setAttribute("title", "Food Mover"); %>
+<script type="text/javascript" src="js/setUserType.js" ></script>
 <%
 	UserService userService = UserServiceFactory.getUserService();
 	User user = userService.getCurrentUser();

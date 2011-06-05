@@ -1,3 +1,5 @@
+var t; //Repetition variable
+
 $().ready(function() {
 	resetMap();
 
@@ -47,6 +49,23 @@ function getListing(lat, lng){
         	var startingPoint = new google.maps.LatLng(lat, lng);
         	latLngs[0] = startingPoint;
         	var i = 1;
+        	var doRefresh = true;
+        	
+        	if(json.length <= 0) {
+        		$( "#dialog-message" ).dialog({
+    				modal: true,
+    				buttons: {
+    					Ok: function() {
+    						$( this ).dialog( "close" );
+    					}
+    				}
+    			});
+        		
+        		clearTimeout(t);
+        		
+        		doRefresh = false;
+        	}
+        	
             // create table from json
         	$(json).each(function(index, value) {
         		var destinationPoint = new google.maps.LatLng(value.lat, value.lng);
@@ -75,7 +94,12 @@ function getListing(lat, lng){
         	for ( var i = 0; i < latLngs.length; i++ ) {
         	  latlngbounds.extend( latLngs[ i ] );
         	}
-        	map.fitBounds( latlngbounds );
+        	
+        	map.fitBounds(latlngbounds);
+        	
+        	if(doRefresh) {
+        		t = setTimeout("getListing(" + lat + "," + lng + ")", 10000);
+        	}
         }
     });
 };
