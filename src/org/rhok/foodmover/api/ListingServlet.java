@@ -3,41 +3,52 @@ package org.rhok.foodmover.api;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.rhok.foodmover.ArgNames;
 import org.rhok.foodmover.entities.FoodListing;
-import org.rhok.foodmover.entities.FoodListingNotification;
 import org.rhok.foodmover.entities.FoodMoverUser;
 
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.repackaged.org.json.JSONException;
 import com.google.appengine.repackaged.org.json.JSONStringer;
-import com.google.appengine.repackaged.org.json.JSONWriter;
 
+/**
+ * Handles calls to /api/v1/listings. Supports creating, updating, deleting, and
+ * querying listings.
+ * 
+ * This class is mostly concerned with validating requests and getting data from requests.
+ * The real logic for working with data exists in ApiMethods.
+ * 
+ * API documentation: https://docs.google.com/document/pub?id=
+ * 1EENWGEVDM3xLEEF1zLXG_SZZphxhE8MnYspsrLNdkvE
+ */
 @SuppressWarnings("serial")
-public class ListingServlet extends HttpServlet {
+public class ListingServlet extends BaseHttpServlet {
+
+	private static final String ACTION_ARG_NAME = "action";
+	private static final String DELETE_ACTION = "delete";
+	private static final String PUT_ACTION = "put";
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (req.getParameter("action") != null) {
-			if (req.getParameter("action").equals("delete")) {
+		// stupid hack: in the jQuery, somehow only POST requests would work
+		// would
+		// so we use POST to get at other HTTP verbs by using the "action"
+		// parameter.
+		if (req.getParameter(ACTION_ARG_NAME) != null) {
+			if (req.getParameter(ACTION_ARG_NAME).equals(DELETE_ACTION)) {
 				doDelete(req, resp);
 				return;
-			} else if (req.getParameter("action").equals("put")) {
+			}
+			if (req.getParameter(ACTION_ARG_NAME).equals(PUT_ACTION)) {
 				doPut(req, resp);
 				return;
 			}
@@ -45,147 +56,103 @@ public class ListingServlet extends HttpServlet {
 
 		checkParams(req);
 
-		float lat = Float.parseFloat(req.getParameter("lat"));
-		float longitude = Float.parseFloat(req.getParameter("lng"));
-		String description = req.getParameter("description");
-		int quantity = Integer.parseInt(req.getParameter("quantity"));
+		// get args from request
+		float lat = Float.parseFloat(req.getParameter(LAT_ARG_NAME));
+		float longitude = Float.parseFloat(req.getParameter(LONGITUDE_ARG_NAME));
+		String description = req.getParameter(ArgNames.DESCRIPTION_ARG_NAME);
+		int quantity = Integer.parseInt(req.getParameter(ArgNames.QUANTITY_ARG_NAME));
+		Date expirationDate = null;
 
-		FoodListing listing = new FoodListing();
-		listing.setLat(lat);
-		listing.setDateOfCreation(new Date());
-		listing.setLongitude(longitude);
-		listing.setDescription(description);
-		listing.setQuantity(quantity);
-		listing.setOwner(FoodMoverUser.getCurrentUser());
-
-		if (req.getParameter("expirationdate") != null) {
+		if (req.getParameter(ArgNames.EXPIRATION_DATE_ARG_NAME) != null) {
 			SimpleDateFormat formatter = new SimpleDateFormat("mm/dd/yyyy");
 			try {
-				listing.setDateOfExpiration(formatter.parse((req.getParameter("expirationdate"))));
+				expirationDate = formatter.parse((req.getParameter(ArgNames.EXPIRATION_DATE_ARG_NAME)));
 			} catch (ParseException e) {
-				throw new ServletException("expirationdate must be of format mm/dd/yyyy");
+				throw new IllegalArgumentException("expiration date must be of format mm/dd/yyyy");
 			}
 		}
 
-		listing.put();
+		// use args to build a food listing
+		Key key = ApiMethods.makeNewFoodListing(lat, longitude, description, quantity, expirationDate);
 
-		notifyOfNewListing(listing);
-
-		writeKey(resp, listing);
+		// send the key for the newly created listing back to the caller
+		writeKey(resp, key);
 	}
 
-	private void notifyOfNewListing(FoodListing listing) {
-		Query q = new Query("Notification");
-
-		// Latitude check with query
-		q.addFilter(FoodListingNotification.LAT_KEY, Query.FilterOperator.GREATER_THAN_OR_EQUAL, listing.getLat() - 10);
-		q.addFilter(FoodListingNotification.LAT_KEY, Query.FilterOperator.LESS_THAN_OR_EQUAL, listing.getLat() + 10);
-
-		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery prepQ = data.prepare(q);
-
-		for (Entity found : prepQ.asIterable()) {
-			// Longitude check in memory
-			FoodListingNotification notification = new FoodListingNotification(found);
-			if (notification.getLongitude() >= (listing.getLongitude() - 10)
-					&& notification.getLongitude() <= (listing.getLongitude() + 10)) {
-				notification.notifyUser(listing);
-			}
-		}		
-	}
-
-	private void writeKey(HttpServletResponse resp, FoodListing listing) throws IOException {
-		resp.getWriter().println(KeyFactory.keyToString(listing.getKey()));
-	}
-
-	private void checkParams(HttpServletRequest req) {
-		if (req.getParameter("lat") == null)
-			throw new IllegalStateException("No lat parameter set");
-		if (req.getParameter("lng") == null)
-			throw new IllegalStateException("No lng parameter set");
-		if (req.getParameter("description") == null)
-			throw new IllegalStateException("No description parameter set");
-		if (req.getParameter("quantity") == null)
-			throw new IllegalStateException("No quantity parameter set");
+	/**
+	 * Throws an IllegalArgumentException is `req` does not include parameters
+	 * for lattitude, longitude, description, and quantity.
+	 * 
+	 * @param req
+	 *            the current request
+	 */
+	private static void checkParams(HttpServletRequest req) {
+		for (String argKey : new String[] { LAT_ARG_NAME, LONGITUDE_ARG_NAME, ArgNames.DESCRIPTION_ARG_NAME, ArgNames.QUANTITY_ARG_NAME }) {
+			checkParam(req, argKey);
+		}
 	}
 
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		checkParams(req);
-		final String strKey = req.getParameter("key");
-		if (strKey == null)
-			throw new IllegalStateException("No key parameter set");
+		BaseHttpServlet.checkParam(req, ArgNames.KEY_ARG_NAME);
+
+		final String strKey = req.getParameter(ArgNames.KEY_ARG_NAME);
 
 		Key key = KeyFactory.stringToKey(strKey);
 		try {
 			FoodListing listing = new FoodListing(DatastoreServiceFactory.getDatastoreService().get(key));
-			
+
 			assert listing.getKey().equals(key) : "Keys don't match";
-			
-			System.out.println(req.getParameter("lng"));
-			
-			listing.setDescription(req.getParameter("description"));
-			listing.setLat(Float.parseFloat(req.getParameter("lat")));
-			listing.setLongitude(Float.parseFloat(req.getParameter("lng")));
-			listing.setQuantity(Integer.parseInt(req.getParameter("quantity")));
-			listing.setOwner(FoodMoverUser.getCurrentUser());
 
-			listing.put();
+			checkOwner(listing);
 
-			writeKey(resp, listing);
+			final String description = req.getParameter(ArgNames.DESCRIPTION_ARG_NAME);
+			final float lat = Float.parseFloat(req.getParameter(LAT_ARG_NAME));
+			final float lng = Float.parseFloat(req.getParameter(LONGITUDE_ARG_NAME));
+			final int quantity = Integer.parseInt(req.getParameter(ArgNames.QUANTITY_ARG_NAME));
+
+			ApiMethods.updateListing(listing, description, lat, lng, quantity);
+
+			writeKey(resp, listing.getKey());
 
 		} catch (EntityNotFoundException e) {
-			throw new IllegalStateException(
+			throw new IllegalArgumentException(
 					"key does not match any current food listing. Did you use KeyFactory.keyToString() correctly?");
+		}
+	}
+
+	/**
+	 * Throw an IllegalArgumentException if the current user is not the owner of
+	 * the listing. Used to validate that the request is authenticated to
+	 * perform updates and deletes.
+	 * 
+	 * @param listing
+	 *            the food listing to check
+	 */
+	private void checkOwner(FoodListing listing) {
+		if (!FoodMoverUser.getCurrentUser().equals(listing.getOwner())) {
+			throw new IllegalArgumentException(
+					"Only listings of the currently authenticated user can be modified. Did you authenticate with GAE?");
 		}
 	}
 
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (req.getParameter("key") == null)
-			throw new IllegalStateException("No key parameter set");
+		BaseHttpServlet.checkParam(req, ArgNames.KEY_ARG_NAME);
 
-		Key key = KeyFactory.stringToKey(req.getParameter("key"));
-		new FoodListing(key).delete();
-		System.out.println("deleted");
+		Key key = KeyFactory.stringToKey(req.getParameter(ArgNames.KEY_ARG_NAME));
+		FoodListing foodListing = new FoodListing(key);
+		checkOwner(foodListing);
 
-		// if
-		// (fl.getOwner().getRawUserObject().equals(FoodMoverUser.getCurrentUser().getRawUserObject()))
-		// {
-		// fl.delete();
-		// } else {
-		// throw new
-		// IllegalAccessError("You have to be the owner of the listing");
-		// }
+		foodListing.delete();
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain");
 
-		List<FoodListing> foodlistings = null;
-
-		if (req.getParameter("lat") != null && req.getParameter("lng") != null) {
-			float latitude = Float.parseFloat(req.getParameter("lat"));
-			float longitude = Float.parseFloat(req.getParameter("lng"));
-			float distance;
-			if (req.getParameter("distance") == null) {
-				distance = Float.parseFloat(this.getInitParameter("default_distance"));
-			} else {
-				distance = Float.parseFloat(req.getParameter("distance"));
-			}
-			foodlistings = findFoodListings(longitude, latitude, distance);
-		} else if (FoodMoverUser.getCurrentUser() != null) {
-			foodlistings = getMyFoodListings();
-		} else {
-			JSONStringer jsonStringer = new JSONStringer();
-			try {
-				resp.getWriter().println(
-						jsonStringer.object().key("ERROR").value("Not logged in / No lng or lat set").toString());
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
+		List<FoodListing> foodlistings = getFoodListingsForRequest(req);
 
 		JSONStringer jsonStringer = new JSONStringer();
 		try {
@@ -210,51 +177,23 @@ public class ListingServlet extends HttpServlet {
 		}
 	}
 
-	public static List<FoodListing> getMyFoodListings() {
-		List<FoodListing> result = new ArrayList<FoodListing>();
-		FoodMoverUser me = FoodMoverUser.getCurrentUser();
-		Query q = new Query("FoodListing");
-		q.addFilter("owner", Query.FilterOperator.EQUAL, me.getRawUserObject());
-
-		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery prepQ = data.prepare(q);
-
-		for (Entity found : prepQ.asIterable()) {
-			FoodListing resultItem = new FoodListing(found);
-
-			if (resultItem.expired()) {
-				continue;
+	private List<FoodListing> getFoodListingsForRequest(HttpServletRequest req) {
+		if (req.getParameter(LAT_ARG_NAME) != null && req.getParameter(LONGITUDE_ARG_NAME) != null) {
+			float latitude = Float.parseFloat(req.getParameter(LAT_ARG_NAME));
+			float longitude = Float.parseFloat(req.getParameter(LONGITUDE_ARG_NAME));
+			float distance = Float.parseFloat(this.getInitParameter("default_distance"));
+			if (req.getParameter(ArgNames.DISTANCE_ARG_NAME) != null) {
+				distance = Float.parseFloat(req.getParameter(ArgNames.DISTANCE_ARG_NAME));
 			}
-
-			result.add(resultItem);
+			return ApiMethods.findFoodListings(longitude, latitude, distance);
 		}
 
-		return result;
-	}
-
-	public static List<FoodListing> findFoodListings(Float longitude, Float latitude, Float distance) {
-		List<FoodListing> result = new ArrayList<FoodListing>();
-
-		Query q = new Query("FoodListing");
-
-		// Latitude check with query
-		q.addFilter(FoodListing.LAT_KEY, Query.FilterOperator.GREATER_THAN_OR_EQUAL, latitude - distance);
-		q.addFilter(FoodListing.LAT_KEY, Query.FilterOperator.LESS_THAN_OR_EQUAL, latitude + distance);
-
-		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery prepQ = data.prepare(q);
-
-		for (Entity found : prepQ.asIterable()) {
-			// Longitude check in memory
-			FoodListing resultItem = new FoodListing(found);
-
-			if (!resultItem.expired() && resultItem.getLongitude() >= (longitude - distance)
-					&& resultItem.getLongitude() <= (longitude + distance)) {
-				result.add(resultItem);
-			}
+		if (FoodMoverUser.getCurrentUser() != null) {
+			return ApiMethods.getCurrentUserFoodListings();
 		}
 
-		return result;
-	}
+		throw new IllegalArgumentException(
+				"You must either be logged in, or specify a lat/longitude. (Distance is optional)");
 
+	}
 }

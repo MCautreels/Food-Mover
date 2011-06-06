@@ -7,41 +7,33 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.rhok.foodmover.entities.FoodMoverUser;
-import org.rhok.foodmover.entities.FoodListingNotification;
 
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-public class NotificationServlet extends HttpServlet {
+/**
+ * Allows the user to register for notifications.
+ * 
+ * API documentation: https://docs.google.com/document/pub?id= 1EENWGEVDM3xLEEF1zLXG_SZZphxhE8MnYspsrLNdkvE
+ */
+@SuppressWarnings("serial")
+public class NotificationServlet extends BaseHttpServlet {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2170298708623332165L;
-
+	private final static String RADIUS_ARG_NAME = "radius";
+	private final static String TYPE_ARG_NAME = "type";
+	
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		if(req.getParameter("lat") == null)	throw new IllegalStateException("No lat parameter set");
-		if(req.getParameter("lng") == null)	throw new IllegalStateException("No lng parameter set");
-		if(req.getParameter("radius") == null)	throw new IllegalStateException("No radius parameter set");
-		if(req.getParameter("type") == null) throw new IllegalStateException("No type parameter set");
-		
-		float lat = Float.parseFloat(req.getParameter("lat"));
-		float longitude = Float.parseFloat(req.getParameter("lng"));
-		Long radius = Long.parseLong(req.getParameter("radius").toString());
-		String type = req.getParameter("type").toString();
-		
-		FoodListingNotification notification = new FoodListingNotification();
-		notification.setLat(lat);
-		notification.setLongitude(longitude);
-		notification.setNotificationType(type);
-		notification.setRadiusKm(radius);
-		notification.setOwner(FoodMoverUser.getCurrentUser());
-		
-		notification.put();
-		
-		resp.getWriter().println(KeyFactory.keyToString(notification.getKey()));
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		checkParams(req, new String[] {LAT_ARG_NAME, LONGITUDE_ARG_NAME, RADIUS_ARG_NAME, TYPE_ARG_NAME});
+
+		float lat = Float.parseFloat(req.getParameter(LAT_ARG_NAME));
+		float longitude = Float.parseFloat(req.getParameter(LONGITUDE_ARG_NAME));
+		float radius = Float.parseFloat(req.getParameter(RADIUS_ARG_NAME));
+		String type = req.getParameter(TYPE_ARG_NAME);
+
+		Key key = ApiMethods.makeNotification(lat, longitude, radius, type);
+
+		writeKey(resp, key);
 	}
 
 }

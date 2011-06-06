@@ -12,6 +12,6 @@ public class IsProducerServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		ApiUtils.setCurrentUserType(true);
+		ApiMethods.setCurrentUserType(true);
 	}
 }

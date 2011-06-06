@@ -11,19 +11,16 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.rhok.foodmover.ArgNames;
+
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.users.User;
 
 public class FoodListingNotification extends BaseEntity {
-	public static final String NOTIFICATION_KEY = "Notification";
-	public static final String LAT_KEY = "lat";
-	public static final String LONGITUDE_KEY = "longitude";
-	public static final String RADIUS_KEY = "radius";
-	public static final String NOTIFICATION_TYPE_KEY = "type";
-	public static final String OWNER_KEY = "owner";
-
+	public static final String NOTIFICATION_ARG_NAME = "Notification";
+	
 	public FoodListingNotification() {
-		entity = new Entity(NOTIFICATION_KEY);
+		entity = new Entity(NOTIFICATION_ARG_NAME);
 	}
 
 	public FoodListingNotification(Entity entity) {
@@ -31,27 +28,27 @@ public class FoodListingNotification extends BaseEntity {
 	}
 
 	public void setLat(float lat) {
-		entity.setProperty(LAT_KEY, lat);
+		entity.setProperty(ArgNames.LAT_ARG_NAME, lat);
 	}
 
 	public void setOwner(FoodMoverUser owner) {
-		entity.setProperty(OWNER_KEY, owner.getRawUserObject());
+		entity.setProperty(ArgNames.OWNER_ARG_NAME, owner.getRawUserObject());
 	}
 
 	public void setLongitude(float longitude) {
-		entity.setProperty(LONGITUDE_KEY, longitude);
+		entity.setProperty(ArgNames.LONGITUDE_ARG_NAME, longitude);
 	}
 
 	public void setNotificationType(String type) {
-		entity.setProperty(NOTIFICATION_TYPE_KEY, type);
+		entity.setProperty(ArgNames.NOTIFICATION_TYPE_ARG_NAME, type);
 	}
 
-	public void setRadiusKm(Long radius) {
-		entity.setProperty(RADIUS_KEY, radius);
+	public void setRadiusKm(float radius) {
+		entity.setProperty(ArgNames.RADIUS_ARG_NAME, radius);
 	}
 
 	public float getLat() {
-		Object lat = entity.getProperty(LAT_KEY);
+		Object lat = entity.getProperty(ArgNames.LAT_ARG_NAME);
 		if (lat instanceof Double) {
 			lat = ((Double) lat).floatValue();
 		}
@@ -59,7 +56,7 @@ public class FoodListingNotification extends BaseEntity {
 	}
 
 	public float getLongitude() {
-		Object lng = entity.getProperty(LONGITUDE_KEY);
+		Object lng = entity.getProperty(ArgNames.LONGITUDE_ARG_NAME);
 		if (lng instanceof Double) {
 			lng = ((Double) lng).floatValue();
 		}
@@ -67,16 +64,16 @@ public class FoodListingNotification extends BaseEntity {
 	}
 
 	public String getNotificationType() {
-		return (String) entity.getProperty(NOTIFICATION_TYPE_KEY);
+		return (String) entity.getProperty(ArgNames.NOTIFICATION_TYPE_ARG_NAME);
 	}
 
-	public Long getRadius() {
-		return ((Long) entity.getProperty(RADIUS_KEY)).longValue();
+	public float getRadiusKm() {
+		return ((Float) entity.getProperty(ArgNames.RADIUS_ARG_NAME)).floatValue();
 	}
 
 	public FoodMoverUser getOwner() {
 		//TODO: Fix hack
-		User u = (User) entity.getProperty(OWNER_KEY);
+		User u = (User) entity.getProperty(ArgNames.OWNER_ARG_NAME);
 		FoodMoverUser result = new FoodMoverUser();
 		result.setUser(u);
 		return result;
@@ -143,6 +140,11 @@ public class FoodListingNotification extends BaseEntity {
 				* Math.cos(lng2 - lng1))
 				* EARTH_RADIUS_KM;
 
-		return distance < getRadius();
+		return distance < getRadiusKm();
+	}
+
+	@Override
+	protected String getEntityName() {
+		return NOTIFICATION_ARG_NAME;
 	}
 }

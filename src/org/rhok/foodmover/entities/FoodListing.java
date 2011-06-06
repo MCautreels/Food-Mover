@@ -10,7 +10,7 @@ import com.google.appengine.api.users.User;
 
 public class FoodListing extends BaseEntity {
 
-	private static final String FOOD_LISTING_KEY = "FoodListing";
+	private static final String FOOD_LISTING_ARG_NAME = "FoodListing";
 	public static final String LAT_KEY = "lat";
 	public static final String LONGITUDE_KEY = "longitude";
 	public static final String QUANTITY_KEY = "quantity";
@@ -22,7 +22,7 @@ public class FoodListing extends BaseEntity {
 
 	@SuppressWarnings("deprecation")
 	public FoodListing() {
-		entity = new Entity(FOOD_LISTING_KEY);
+		entity = new Entity(FOOD_LISTING_ARG_NAME);
 		setDateOfCreation(new Date());
 		
 		final Date expiration = new Date();
@@ -115,5 +115,10 @@ public class FoodListing extends BaseEntity {
 	public boolean expired() {
 		final Date now = new Date();
 		return !(now.after(getDateOfCreation()) && now.before(getDateOfExpiration()));
+	}
+	
+	@Override
+	protected String getEntityName() {
+		return FOOD_LISTING_ARG_NAME;
 	}
 }

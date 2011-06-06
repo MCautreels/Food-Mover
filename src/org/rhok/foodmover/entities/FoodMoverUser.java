@@ -1,5 +1,7 @@
 package org.rhok.foodmover.entities;
 
+import org.rhok.foodmover.ArgNames;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -13,9 +15,6 @@ import com.google.appengine.api.users.UserServiceFactory;
 public class FoodMoverUser extends BaseEntity {
 	
 	private static final String FOOD_MOVER_USER_KIND = "FoodMoverUser";
-	
-	private static final String USER_KEY = "user";
-	private static final String USER_TYPE_KEY = "user type";
 	
 	private FoodMoverUser(Entity entity) {
 		this.entity = entity;
@@ -35,16 +34,16 @@ public class FoodMoverUser extends BaseEntity {
 	}
 
 	public void setUser(User user) {
-		entity.setProperty(USER_KEY, user);
+		entity.setProperty(ArgNames.USER_KEY, user);
 	}
 	
 	public User getRawUserObject()
 	{
-		return (User) entity.getProperty(USER_KEY);
+		return (User) entity.getProperty(ArgNames.USER_KEY);
 	}
 	
 	public void setIsProducer(boolean isProducer) {
-		entity.setProperty(USER_TYPE_KEY, isProducer);
+		entity.setProperty(ArgNames.IS_PRODUCER_ARG_NAME, isProducer);
 	}
 	
 	public static FoodMoverUser getCurrentUser() {
@@ -55,7 +54,7 @@ public class FoodMoverUser extends BaseEntity {
 		
 		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query(FOOD_MOVER_USER_KIND);
-		q.addFilter(USER_KEY, Query.FilterOperator.EQUAL, currRawUser);
+		q.addFilter(ArgNames.USER_KEY, Query.FilterOperator.EQUAL, currRawUser);
 		PreparedQuery prepQ = data.prepare(q);
 		
 		for (Entity found : prepQ.asIterable()) {
@@ -74,6 +73,11 @@ public class FoodMoverUser extends BaseEntity {
 	}
 
 	public boolean isProducer() {
-		return (Boolean) entity.getProperty(USER_TYPE_KEY);
+		return (Boolean) entity.getProperty(ArgNames.IS_PRODUCER_ARG_NAME);
+	}
+
+	@Override
+	protected String getEntityName() {
+		return FOOD_MOVER_USER_KIND;
 	}
 }

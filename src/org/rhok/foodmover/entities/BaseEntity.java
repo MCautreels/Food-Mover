@@ -4,6 +4,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Query;
 
 public abstract class BaseEntity {
 	
@@ -19,5 +20,11 @@ public abstract class BaseEntity {
 	
 	public Key getKey() {
 		return entity.getKey();
+	}
+	
+	protected abstract String getEntityName();
+	
+	public Query getQuery() {
+		return new Query(getEntityName());
 	}
 }
