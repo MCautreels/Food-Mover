@@ -46,6 +46,13 @@ public class FoodMoverUser extends BaseEntity {
 		entity.setProperty(ArgNames.IS_PRODUCER_ARG_NAME, isProducer);
 	}
 	
+	/**
+	 * Get the currently logged in user.
+	 * 
+	 * @return	null if not user is logged in
+	 * 			the FoodMoverUser wrapping the logged in user, if it is already stored in the database
+	 * 			a new FoodMoverUser object, if no record of the user exists in the database. It will not be saved already!
+	 */
 	public static FoodMoverUser getCurrentUser() {
 		User currRawUser = UserServiceFactory.getUserService().getCurrentUser();
 		if (currRawUser == null) {
@@ -63,7 +70,9 @@ public class FoodMoverUser extends BaseEntity {
 			return result;
 		}
 		
-		return null;
+		final FoodMoverUser result = new FoodMoverUser();
+		result.setUser(currRawUser);
+		return result;
 	}
 	
 	public static FoodMoverUser registerCurrentUser() {

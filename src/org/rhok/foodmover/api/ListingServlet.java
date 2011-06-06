@@ -163,8 +163,8 @@ public class ListingServlet extends BaseHttpServlet {
 						.value(foodListing.getLat()).key("lng").value(foodListing.getLongitude()).key("description")
 						.value(foodListing.getDescription()).key("quantity").value(foodListing.getQuantity())
 						.key("email").value(foodListing.getOwner().getRawUserObject().getEmail());
-				if (foodListing.getDateOfExpiration() != null) {
-					jsonStringer.key("dateofexpiration").value(foodListing.getDateOfExpiration().getTime());
+				if (foodListing.getExpirationDate() != null) {
+					jsonStringer.key("dateofexpiration").value(foodListing.getExpirationDate().getTime());
 				}
 				jsonStringer.endObject();
 			}

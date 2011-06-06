@@ -47,6 +47,10 @@ public class FoodListing extends BaseEntity {
 	}
 
 	public void setOwner(FoodMoverUser owner) {
+		if (owner == null) {
+			throw new IllegalArgumentException("Owner may not be null.");
+		}
+		
 		entity.setProperty(OWNER_KEY, owner.getRawUserObject());
 	}
 
@@ -98,7 +102,7 @@ public class FoodListing extends BaseEntity {
 		return new Date((Long) entity.getProperty(DATE_OF_CREATION_KEY));
 	}
 
-	public Date getDateOfExpiration() {
+	public Date getExpirationDate() {
 		final Object time = entity.getProperty(DATE_OF_EXPIRATION_KEY);
 		return new Date((Long) time);
 	}
@@ -114,7 +118,7 @@ public class FoodListing extends BaseEntity {
 
 	public boolean expired() {
 		final Date now = new Date();
-		return !(now.after(getDateOfCreation()) && now.before(getDateOfExpiration()));
+		return !(now.after(getDateOfCreation()) && now.before(getExpirationDate()));
 	}
 	
 	@Override
