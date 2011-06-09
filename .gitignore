@@ -37,3 +37,4 @@ Thumbs.db
 # Custom Directories #
 ######################
 FoodMovr-Android/bin/
+FoodMovr-API/war/WEB-INF/appengine-generated/
