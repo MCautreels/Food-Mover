@@ -6,11 +6,13 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions.Builder;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Objectify;
+import com.googlecode.objectify.ObjectifyService;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +42,8 @@ public class ListingTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void testMakeNewFoodListing() {
+		Objectify objectify = ObjectifyService.begin();
+		
 		float lat = 3;
 		float longitude = 4;
 		String description = "oooo body massage";
@@ -47,12 +51,12 @@ public class ListingTest {
 		Date expirationDate = new Date();
 		expirationDate.setHours(expirationDate.getHours() + 4);
 
-		Key key = ApiMethods.makeNewFoodListing(lat, longitude, description, quantity, expirationDate);
+		Key<FoodListing> key = ApiMethods.makeNewFoodListing(lat, longitude, description, quantity, expirationDate);
 
 		FoodListing result = new FoodListing(key);
 
 		assertEquals(lat, result.getLat(), .2);
-		assertEquals(longitude, result.getLongitude(), .2);
+		assertEquals(longitude, result.getLng(), .2);
 		assertEquals(description, result.getDescription());
 		assertSame(quantity, result.getQuantity());
 		assertEquals(expirationDate, result.getExpirationDate());

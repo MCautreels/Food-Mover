@@ -1,18 +1,23 @@
 package org.rhok.foodmover.entities;
 
+import javax.persistence.Id;
+
 import org.rhok.foodmover.ArgNames;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.googlecode.objectify.Key;
 
-public class FoodMoverUser extends BaseEntity {
+public class FoodMoverUser {
+	
+	@Id
+	private long id;
 	
 	private static final String FOOD_MOVER_USER_KIND = "FoodMoverUser";
 	
@@ -88,5 +93,9 @@ public class FoodMoverUser extends BaseEntity {
 	@Override
 	protected String getEntityName() {
 		return FOOD_MOVER_USER_KIND;
+	}
+
+	public Key<FoodMoverUser> getKey() {
+		return new Key<FoodMoverUser>(FoodMoverUser.class, id);
 	}
 }

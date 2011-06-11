@@ -10,74 +10,71 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.persistence.Id;
 
-import org.rhok.foodmover.ArgNames;
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Objectify;
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Query;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.users.User;
+public class FoodListingNotification {
 
-public class FoodListingNotification extends BaseEntity {
-	public static final String NOTIFICATION_ARG_NAME = "Notification";
-	
-	public FoodListingNotification() {
-		entity = new Entity(NOTIFICATION_ARG_NAME);
-	}
+	@Id
+	private long id;
 
-	public FoodListingNotification(Entity entity) {
-		this.entity = entity;
+	// these have to be the exact variable names for `lat` and `lng`, for
+	// querying
+	private static final String LAT_VAR_NAME = "lat";
+	private static final String LNG_VAR_NAME = "lng";
+
+	private float lat;
+	private float lng;
+	private Key<FoodMoverUser> owner;
+	private float radiusKm;
+
+	// no radius may be larger than this
+	// this makes queries a bit easier by limiting the number we need to check
+	// while notifying for a given new listing.
+	private static final float RADIUS_LIMIT = 20;
+
+	// no support for notification type for now
+
+	public float getLat() {
+		return lat;
 	}
 
 	public void setLat(float lat) {
-		entity.setProperty(ArgNames.LAT_ARG_NAME, lat);
+		this.lat = lat;
 	}
 
-	public void setOwner(FoodMoverUser owner) {
-		entity.setProperty(ArgNames.OWNER_ARG_NAME, owner.getRawUserObject());
+	public float getLng() {
+		return lng;
 	}
 
-	public void setLongitude(float longitude) {
-		entity.setProperty(ArgNames.LONGITUDE_ARG_NAME, longitude);
-	}
-
-	public void setNotificationType(String type) {
-		entity.setProperty(ArgNames.NOTIFICATION_TYPE_ARG_NAME, type);
-	}
-
-	public void setRadiusKm(float radius) {
-		entity.setProperty(ArgNames.RADIUS_ARG_NAME, radius);
-	}
-
-	public float getLat() {
-		Object lat = entity.getProperty(ArgNames.LAT_ARG_NAME);
-		if (lat instanceof Double) {
-			lat = ((Double) lat).floatValue();
-		}
-		return (Float) lat;
-	}
-
-	public float getLongitude() {
-		Object lng = entity.getProperty(ArgNames.LONGITUDE_ARG_NAME);
-		if (lng instanceof Double) {
-			lng = ((Double) lng).floatValue();
-		}
-		return (Float) lng;
-	}
-
-	public String getNotificationType() {
-		return (String) entity.getProperty(ArgNames.NOTIFICATION_TYPE_ARG_NAME);
-	}
-
-	public float getRadiusKm() {
-		return ((Float) entity.getProperty(ArgNames.RADIUS_ARG_NAME)).floatValue();
+	public void setLng(float lng) {
+		this.lng = lng;
 	}
 
 	public FoodMoverUser getOwner() {
-		//TODO: Fix hack
-		User u = (User) entity.getProperty(ArgNames.OWNER_ARG_NAME);
-		FoodMoverUser result = new FoodMoverUser();
-		result.setUser(u);
-		return result;
-		//return (FoodMoverUser) entity.getProperty(OWNER_KEY);
+		Objectify ofy = ObjectifyService.begin();
+		return ofy.get(owner);
+	}
+
+	public void setOwner(Key<FoodMoverUser> owner) {
+		this.owner = owner;
+	}
+
+	public float getRadiusKm() {
+		return radiusKm;
+	}
+
+	public void setRadiusKm(float radiusKm) {
+		if (radiusKm > RADIUS_LIMIT) {
+			throw new IllegalArgumentException(String.format(
+					"Radius must be less than '%d', but was: '%d'",
+					RADIUS_LIMIT, radiusKm));
+		}
+		this.radiusKm = radiusKm;
 	}
 
 	public void notifyUser(FoodListing listing) {
@@ -85,42 +82,27 @@ public class FoodListingNotification extends BaseEntity {
 			return;
 		}
 
-		if (getNotificationType().equals("email")) {
-			Properties props = new Properties();
-	        Session session = Session.getDefaultInstance(props, null);
+		Properties props = new Properties();
+		Session session = Session.getDefaultInstance(props, null);
 
-	        String msgBody = "...";
+		String msgBody = "...";
 
-	        try {
-	            Message msg = new MimeMessage(session);
-	            msg.setFrom(new InternetAddress("no-reply@foodmover.com", "Food Mover Notification Service"));
-	            msg.addRecipient(Message.RecipientType.TO,
-	                             new InternetAddress(this.getOwner().getRawUserObject().getEmail(), this.getOwner().getRawUserObject().getEmail()));
-	            msg.setSubject("Food has been found near your location! Go check on our site: http://foodmovr.appspot.com");
-	            msg.setText(msgBody);
-	            Transport.send(msg);
-	        } catch (AddressException e) {
-	        	e.printStackTrace();
-	        } catch (MessagingException e) {
-	        	e.printStackTrace();
-	        } catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-	        
-			/*Properties props = new Properties();
-			Session session = Session.getDefaultInstance(props, null);
-			MimeMessage msg = new MimeMessage(session);
-
-			try {
-				msg.setFrom(new InternetAddress("nick.heiner@gmail.com", "FoodMovr"));
-				msg.setSubject("[FoodMovr] New Listing");
-				msg.setText("New food listing in your area! " + listing.getDescription());
-				Transport.send(msg);
-			} catch (MessagingException e) {
-				throw new RuntimeException(e);
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}*/ 
+		try {
+			Message msg = new MimeMessage(session);
+			msg.setFrom(new InternetAddress("no-reply@foodmover.com",
+					"Food Mover Notification Service"));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(this
+					.getOwner().getRawUserObject().getEmail(), this.getOwner()
+					.getRawUserObject().getEmail()));
+			msg.setSubject("Food has been found near your location! Go check on our site: http://foodmovr.appspot.com");
+			msg.setText(msgBody);
+			Transport.send(msg);
+		} catch (AddressException e) {
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -130,21 +112,41 @@ public class FoodListingNotification extends BaseEntity {
 		final int EARTH_RADIUS_KM = 6371;
 
 		double lat1 = Math.toRadians(listing.getLat());
-		double lng1 = Math.toRadians(listing.getLongitude());
+		double lng1 = Math.toRadians(listing.getLng());
 
 		double lat2 = Math.toRadians(getLat());
-		double lng2 = Math.toRadians(getLongitude());
+		double lng2 = Math.toRadians(getLng());
 
 		// distance is in KM
-		double distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2)
-				* Math.cos(lng2 - lng1))
+		double distance = Math.acos(Math.sin(lat1) * Math.sin(lat2)
+				+ Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1))
 				* EARTH_RADIUS_KM;
 
 		return distance < getRadiusKm();
 	}
 
-	@Override
-	protected String getEntityName() {
-		return NOTIFICATION_ARG_NAME;
+	public static void notifyOfNewListing(FoodListing listing) {
+		Objectify objectify = ObjectifyService.begin();
+		
+		// This query will probably fail for longitude wrap around	
+		Query<FoodListingNotification> notifications = objectify.query(FoodListingNotification.class)
+				.filter(LAT_VAR_NAME + " >", listing.getLat() - kmToLatitude(RADIUS_LIMIT))
+				.filter(LAT_VAR_NAME + " <", listing.getLat() + kmToLatitude(RADIUS_LIMIT))
+				.filter(LNG_VAR_NAME + " >", listing.getLng() - kmToLongitude(RADIUS_LIMIT))
+				.filter(LNG_VAR_NAME + " <", listing.getLng() + kmToLongitude(RADIUS_LIMIT));
+		
+		for (FoodListingNotification notification : notifications) {
+			notification.notifyUser(listing);
+		}
+	}
+	
+	private static float kmToLatitude(float km) {
+		// approximation from http://geography.about.com/library/faq/blqzdistancedegree.htm
+		return km / 111;
+	}
+	
+	private static float kmToLongitude(float km) {
+		// approximation from http://geography.about.com/library/faq/blqzdistancedegree.htm
+		return km / 90;
 	}
 }

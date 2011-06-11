@@ -2,127 +2,97 @@ package org.rhok.foodmover.entities;
 
 import java.util.Date;
 
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.users.User;
+import javax.persistence.Id;
 
-public class FoodListing extends BaseEntity {
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Objectify;
+import com.googlecode.objectify.ObjectifyService;
 
-	private static final String FOOD_LISTING_ARG_NAME = "FoodListing";
-	public static final String LAT_KEY = "lat";
-	public static final String LONGITUDE_KEY = "longitude";
-	public static final String QUANTITY_KEY = "quantity";
-	public static final String DESCRIPTION_KEY = "descr";
-	public static final String DATE_OF_CREATION_KEY = "dateOfCreation";
-	public static final String DATE_OF_EXPIRATION_KEY = "dateOfExpiration";
-	public static final String OWNER_KEY = "owner";
+public class FoodListing {
+	
+	@Id
+	private long id;
+	
+	private float lat;
+	private float lng;
+	private int quantity;
+	private String description;
+	private Date creationDate;
+	private Date expirationDate;
+	
+	// I think this needs to be a Key, because objectify can't serialize a FoodMoverUser directly.
+	private Key<FoodMoverUser> owner;
+	
 	private static final int EXPIRATION_HOURS = 3;
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")	
 	public FoodListing() {
-		entity = new Entity(FOOD_LISTING_ARG_NAME);
-		setDateOfCreation(new Date());
+		setCreationDate(new Date());
 		
 		final Date expiration = new Date();
 		expiration.setHours(expiration.getHours() + EXPIRATION_HOURS);
-		setDateOfExpiration(expiration);
-	}
-
-	public FoodListing(Key key) {
-		try {
-			this.entity = DatastoreServiceFactory.getDatastoreService().get(key);
-		} catch (EntityNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public FoodListing(Entity entity) {
-		this.entity = entity;
-	}
-
-	public void setLat(float lat) {
-		entity.setProperty(LAT_KEY, lat);
-	}
-
-	public void setOwner(FoodMoverUser owner) {
-		if (owner == null) {
-			throw new IllegalArgumentException("Owner may not be null.");
-		}
-		
-		entity.setProperty(OWNER_KEY, owner.getRawUserObject());
-	}
-
-	public void setLongitude(float longitude) {
-		entity.setProperty(LONGITUDE_KEY, longitude);
-	}
-
-	public void setQuantity(int quantity) {
-		entity.setProperty(QUANTITY_KEY, quantity);
-	}
-
-	public void setDescription(String description) {
-		entity.setProperty(DESCRIPTION_KEY, description);
-	}
-
-	public void setDateOfCreation(Date date) {
-		entity.setProperty(DATE_OF_CREATION_KEY, date.getTime());
-	}
-
-	public void setDateOfExpiration(Date date) {
-		entity.setProperty(DATE_OF_EXPIRATION_KEY, date.getTime());
-	}
-
-	public float getLat() {
-		Object lat = entity.getProperty(LAT_KEY);
-		if (lat instanceof Double) {
-			lat = ((Double) lat).floatValue();
-		}
-		return (Float) lat;
-	}
-
-	public float getLongitude() {
-		Object lng = entity.getProperty(LONGITUDE_KEY);
-		if (lng instanceof Double) {
-			lng = ((Double) lng).floatValue();
-		}
-		return (Float) lng;
-	}
-
-	public int getQuantity() {
-		return ((Long) entity.getProperty(QUANTITY_KEY)).intValue();
-	}
-
-	public String getDescription() {
-		return (String) entity.getProperty(DESCRIPTION_KEY);
-	}
-
-	public Date getDateOfCreation() {
-		return new Date((Long) entity.getProperty(DATE_OF_CREATION_KEY));
-	}
-
-	public Date getExpirationDate() {
-		final Object time = entity.getProperty(DATE_OF_EXPIRATION_KEY);
-		return new Date((Long) time);
-	}
-
-	public FoodMoverUser getOwner() {
-		// TODO: Query for the real FoodMoverUser object instead of creating a
-		// dummy one
-		FoodMoverUser owner = new FoodMoverUser();
-		owner.setUser((User) entity.getProperty(OWNER_KEY));
-		return owner;
-		// return new FoodMoverUser() entity.getProperty(OWNER_KEY);
+		setExpirationDate(expiration);
 	}
 
 	public boolean expired() {
 		final Date now = new Date();
-		return !(now.after(getDateOfCreation()) && now.before(getExpirationDate()));
+		return !(now.after(getCreationDate()) && now.before(getExpirationDate()));
 	}
-	
-	@Override
-	protected String getEntityName() {
-		return FOOD_LISTING_ARG_NAME;
+
+	public float getLat() {
+		return lat;
+	}
+
+	public void setLat(float lat) {
+		this.lat = lat;
+	}
+
+	public float getLng() {
+		return lng;
+	}
+
+	public void setLng(float lng) {
+		this.lng = lng;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+
+	public FoodMoverUser getOwner() {
+		Objectify ofy = ObjectifyService.begin();
+		return ofy.get(owner);
+	}
+
+	public void setOwner(FoodMoverUser owner) {
+		this.owner = owner.getKey();
 	}
 }
