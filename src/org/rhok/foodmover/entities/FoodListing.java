@@ -12,7 +12,9 @@ import org.rhok.foodmover.api.Util;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 
-public class FoodListing {
+// TODO: use indices as appropriate to only index what we need:
+// http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Optimizing_Storage
+public class FoodListing implements GeoItem {
 	
 	// id must be a Long, and it must be init'd to null
 	// otherwise Objectify won't successfully create a new backing instance in the datastore.
@@ -108,8 +110,8 @@ public class FoodListing {
 		this.owner = owner.getKey();
 	}
 	
-	public static List<FoodListing> findFoodListings(float lat, float longitude, float distanceKM) {
-		return Util.findWithinDistance(lat, longitude, distanceKM, LAT_VAR_NAME, LNG_VAR_NAME, FoodListing.class).list();
+	public static Collection<FoodListing> findFoodListings(float lat, float longitude, float distanceKM) {
+		return Util.findWithinDistance(lat, longitude, distanceKM, LAT_VAR_NAME, FoodListing.class);
 	}
 
 	public static Collection<FoodListing> getListingsFor(FoodMoverUser currentUser) {

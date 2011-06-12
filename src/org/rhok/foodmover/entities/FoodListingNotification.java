@@ -1,6 +1,7 @@
 package org.rhok.foodmover.entities;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -20,7 +21,7 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 
-public class FoodListingNotification {
+public class FoodListingNotification implements GeoItem {
 
 	@Id
 	private Long id = null;
@@ -123,8 +124,8 @@ public class FoodListingNotification {
 	}
 
 	public static void notifyOfNewListing(FoodListing listing) {
-		Query<FoodListingNotification> notifications = Util.findWithinDistance(listing.getLat(), listing.getLng(), RADIUS_LIMIT_KM, LAT_VAR_NAME,
-				LNG_VAR_NAME, FoodListingNotification.class);
+		Collection<FoodListingNotification> notifications = Util.findWithinDistance(listing.getLat(), listing.getLng(), RADIUS_LIMIT_KM, LAT_VAR_NAME,
+				FoodListingNotification.class);
 
 		for (FoodListingNotification notification : notifications) {
 			notification.notifyUser(listing);
