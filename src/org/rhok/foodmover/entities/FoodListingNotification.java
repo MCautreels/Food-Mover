@@ -15,12 +15,14 @@ import javax.persistence.Id;
 
 import org.rhok.foodmover.api.ObjectifyUtil;
 import org.rhok.foodmover.api.Util;
+import org.rhok.foodmover.test.ApiTest;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
-import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.Query;
+import com.googlecode.objectify.annotation.Entity;
 
+// this @Entity notification is necessary so we can mock notifications
+@Entity
 public class FoodListingNotification implements GeoItem {
 
 	@Id
@@ -88,7 +90,7 @@ public class FoodListingNotification implements GeoItem {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 
-		String msgBody = "...";
+		String msgBody = "Description: " + listing.getDescription();
 
 		try {
 			Message msg = new MimeMessage(session);
