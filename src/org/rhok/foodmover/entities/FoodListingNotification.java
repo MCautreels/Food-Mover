@@ -74,7 +74,8 @@ public class FoodListingNotification implements GeoItem {
 
 	public void setRadiusKm(float radiusKm) {
 		if (radiusKm > RADIUS_LIMIT_KM) {
-			throw new IllegalArgumentException(String.format("Radius must be less than '%f', but was: '%f'", RADIUS_LIMIT_KM, radiusKm));
+			throw new IllegalArgumentException(String.format("Radius must be less than '%f', but was: '%f'",
+					RADIUS_LIMIT_KM, radiusKm));
 		}
 		this.radiusKm = radiusKm;
 	}
@@ -92,8 +93,8 @@ public class FoodListingNotification implements GeoItem {
 		try {
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress("no-reply@foodmover.com", "Food Mover Notification Service"));
-			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(this.getOwner().getRawUserObject().getEmail(), this.getOwner()
-					.getRawUserObject().getEmail()));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(this.getOwner().getRawUserObject()
+					.getEmail(), this.getOwner().getRawUserObject().getEmail()));
 			msg.setSubject("Food has been found near your location! Go check on our site: http://foodmovr.appspot.com");
 			msg.setText(msgBody);
 			Transport.send(msg);
@@ -118,17 +119,64 @@ public class FoodListingNotification implements GeoItem {
 		double lng2 = Math.toRadians(getLng());
 
 		// distance is in KM
-		double distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1)) * EARTH_RADIUS_KM;
+		double distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2)
+				* Math.cos(lng2 - lng1))
+				* EARTH_RADIUS_KM;
 
 		return distance < getRadiusKm();
 	}
 
 	public static void notifyOfNewListing(FoodListing listing) {
-		Collection<FoodListingNotification> notifications = Util.findWithinDistance(listing.getLat(), listing.getLng(), RADIUS_LIMIT_KM, LAT_VAR_NAME,
-				FoodListingNotification.class);
+		Collection<FoodListingNotification> notifications = Util.findWithinDistance(listing.getLat(), listing.getLng(),
+				RADIUS_LIMIT_KM, LAT_VAR_NAME, FoodListingNotification.class);
 
 		for (FoodListingNotification notification : notifications) {
 			notification.notifyUser(listing);
 		}
 	}
+
+	// should equals() and hashCode() only be a function of id?
+	// I'm not sure.
+	// id isn't set until the item is saved, and it would be nice to support equality before that.
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + Float.floatToIntBits(lat);
+		result = prime * result + Float.floatToIntBits(lng);
+		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+		result = prime * result + Float.floatToIntBits(radiusKm);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FoodListingNotification other = (FoodListingNotification) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (Float.floatToIntBits(lat) != Float.floatToIntBits(other.lat))
+			return false;
+		if (Float.floatToIntBits(lng) != Float.floatToIntBits(other.lng))
+			return false;
+		if (owner == null) {
+			if (other.owner != null)
+				return false;
+		} else if (!owner.equals(other.owner))
+			return false;
+		if (Float.floatToIntBits(radiusKm) != Float.floatToIntBits(other.radiusKm))
+			return false;
+		return true;
+	}
+
 }

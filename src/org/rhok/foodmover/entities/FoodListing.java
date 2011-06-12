@@ -21,10 +21,8 @@ public class FoodListing implements GeoItem {
 	@Id
 	private Long id = null;
 
-	// these have to be the exact variable names for `lat` and `lng`, for
-	// querying
-	private static final String LAT_VAR_NAME = "lat";
-	private static final String LNG_VAR_NAME = "lng";
+	// these have to be the exact variable names, for querying
+	public static final String LAT_VAR_NAME = "lat";
 	private static final String OWNER_VAR_NAME = "owner";
 
 	private float lat;
@@ -46,6 +44,13 @@ public class FoodListing implements GeoItem {
 		final Date expiration = new Date();
 		expiration.setHours(expiration.getHours() + EXPIRATION_HOURS);
 		setExpirationDate(expiration);
+	}
+
+	public FoodListing(float lat, float lng) {
+		this();
+		
+		this.lat = lat;
+		this.lng = lng;
 	}
 
 	public boolean expired() {
@@ -117,5 +122,68 @@ public class FoodListing implements GeoItem {
 	public static Collection<FoodListing> getListingsFor(FoodMoverUser currentUser) {
 		Objectify ofy = ObjectifyUtil.get();
 		return ofy.query(FoodListing.class).filter(OWNER_VAR_NAME, currentUser.getKey()).list();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((expirationDate == null) ? 0 : expirationDate.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + Float.floatToIntBits(lat);
+		result = prime * result + Float.floatToIntBits(lng);
+		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+		result = prime * result + quantity;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FoodListing other = (FoodListing) obj;
+		if (creationDate == null) {
+			if (other.creationDate != null)
+				return false;
+		} else if (!creationDate.equals(other.creationDate))
+			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (expirationDate == null) {
+			if (other.expirationDate != null)
+				return false;
+		} else if (!expirationDate.equals(other.expirationDate))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (Float.floatToIntBits(lat) != Float.floatToIntBits(other.lat))
+			return false;
+		if (Float.floatToIntBits(lng) != Float.floatToIntBits(other.lng))
+			return false;
+		if (owner == null) {
+			if (other.owner != null)
+				return false;
+		} else if (!owner.equals(other.owner))
+			return false;
+		if (quantity != other.quantity)
+			return false;
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("FoodListing '%s' at (%f, %f)", description, lat, lng);
 	}
 }
