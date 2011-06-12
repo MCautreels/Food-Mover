@@ -1,4 +1,4 @@
-package org.rhok.foodmover;
+package org.rhok.foodmover.api;
 
 public final class ArgNames {
 

@@ -10,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.rhok.foodmover.ArgNames;
 import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.FoodMoverUser;
 
@@ -31,6 +30,8 @@ import com.google.appengine.repackaged.org.json.JSONStringer;
  * 1EENWGEVDM3xLEEF1zLXG_SZZphxhE8MnYspsrLNdkvE
  */
 @SuppressWarnings("serial")
+
+// TODO: look in to using http://wiki.restlet.org/docs_2.0/13-restlet/21-restlet/318-restlet/303-restlet.html
 public class ListingServlet extends BaseHttpServlet {
 
 	private static final String ACTION_ARG_NAME = "action";

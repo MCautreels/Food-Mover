@@ -2,100 +2,74 @@ package org.rhok.foodmover.entities;
 
 import javax.persistence.Id;
 
-import org.rhok.foodmover.ArgNames;
+import org.rhok.foodmover.api.ObjectifyUtil;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Objectify;
 
 public class FoodMoverUser {
-	
-	@Id
-	private long id;
-	
-	private static final String FOOD_MOVER_USER_KIND = "FoodMoverUser";
-	
-	private FoodMoverUser(Entity entity) {
-		this.entity = entity;
-	}
-	
-	public FoodMoverUser(Key key)
-	{
-		try {
-			this.entity = DatastoreServiceFactory.getDatastoreService().get(key);
-		} catch (EntityNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public FoodMoverUser() {
-		entity = new Entity(FOOD_MOVER_USER_KIND);
-	}
 
-	public void setUser(User user) {
-		entity.setProperty(ArgNames.USER_KEY, user);
-	}
-	
-	public User getRawUserObject()
-	{
-		return (User) entity.getProperty(ArgNames.USER_KEY);
-	}
-	
-	public void setIsProducer(boolean isProducer) {
-		entity.setProperty(ArgNames.IS_PRODUCER_ARG_NAME, isProducer);
-	}
-	
+	@Id
+	private Long id = null;
+
+	// this has to be the exact name of the user field, for querying
+	private static final String USER_VAR_NAME = "user";
+
+	private boolean isProducer;
+	private transient Key<User> userKey;
+
 	/**
 	 * Get the currently logged in user.
 	 * 
-	 * @return	null if not user is logged in
-	 * 			the FoodMoverUser wrapping the logged in user, if it is already stored in the database
-	 * 			a new FoodMoverUser object, if no record of the user exists in the database. It will not be saved already!
+	 * @return null if not user is logged in <br />
+	 *         the FoodMoverUser wrapping the logged in user. If no
+	 *         FoodMoverUser already wrapping the current user already exists,
+	 *         it will be created and saved.
 	 */
 	public static FoodMoverUser getCurrentUser() {
 		User currRawUser = UserServiceFactory.getUserService().getCurrentUser();
 		if (currRawUser == null) {
 			return null;
 		}
-		
-		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query(FOOD_MOVER_USER_KIND);
-		q.addFilter(ArgNames.USER_KEY, Query.FilterOperator.EQUAL, currRawUser);
-		PreparedQuery prepQ = data.prepare(q);
-		
-		for (Entity found : prepQ.asIterable()) {
-			FoodMoverUser result = new FoodMoverUser(found);
-			result.setUser(currRawUser);
-			return result;
+
+		Objectify objectify = ObjectifyUtil.get();
+		FoodMoverUser foodMoverUser = objectify.query(FoodMoverUser.class).filter(USER_VAR_NAME, currRawUser).get();
+
+		if (foodMoverUser != null) {
+			return foodMoverUser;
 		}
-		
-		final FoodMoverUser result = new FoodMoverUser();
-		result.setUser(currRawUser);
-		return result;
+
+		foodMoverUser = new FoodMoverUser();
+		foodMoverUser.setUser(currRawUser);
+		objectify.put(foodMoverUser);
+		return foodMoverUser;
 	}
-	
-	public static FoodMoverUser registerCurrentUser() {
+
+	private void setUser(User user) {
+		userKey = new Key<User>(User.class, user.getEmail());
+	}
+
+	public static FoodMoverUser createCurrentUser() {
 		FoodMoverUser result = new FoodMoverUser();
 		result.setUser(UserServiceFactory.getUserService().getCurrentUser());
 		return result;
 	}
 
-	public boolean isProducer() {
-		return (Boolean) entity.getProperty(ArgNames.IS_PRODUCER_ARG_NAME);
+	public void setIsProducer(boolean isProducer) {
+		this.isProducer = isProducer;
 	}
 
-	@Override
-	protected String getEntityName() {
-		return FOOD_MOVER_USER_KIND;
+	public boolean isProducer() {
+		return isProducer;
 	}
 
 	public Key<FoodMoverUser> getKey() {
 		return new Key<FoodMoverUser>(FoodMoverUser.class, id);
+	}
+
+	public User getRawUserObject() {
+		return ObjectifyUtil.get().get(userKey);
 	}
 }

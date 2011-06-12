@@ -1,21 +1,16 @@
 package org.rhok.foodmover.api;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import javax.activity.InvalidActivityException;
 
-import org.rhok.foodmover.ArgNames;
 import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.FoodListingNotification;
 import org.rhok.foodmover.entities.FoodMoverUser;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
+import com.google.appengine.repackaged.com.google.common.base.Predicate;
+import com.google.appengine.repackaged.com.google.common.collect.Collections2;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
@@ -36,7 +31,7 @@ public class ApiMethods {
 			listing.setExpirationDate(expirationDate);
 		}
 		
-		Objectify objectify = ObjectifyService.begin();
+		Objectify objectify = ObjectifyUtil.get();
 		Key<FoodListing> key = objectify.put(listing);
 		
 		FoodListingNotification.notifyOfNewListing(listing);
@@ -55,75 +50,36 @@ public class ApiMethods {
 		objectify.put(listing);
 	}
 
-	public static List<FoodListing> findFoodListings(Float longitude, Float latitude, Float distance) {
-		List<FoodListing> result = new ArrayList<FoodListing>();
-	
-		Query q = new Query("FoodListing");
-	
-		// Latitude check with query
-		q.addFilter(FoodListing.LAT_KEY, Query.FilterOperator.GREATER_THAN_OR_EQUAL, latitude - distance);
-		q.addFilter(FoodListing.LAT_KEY, Query.FilterOperator.LESS_THAN_OR_EQUAL, latitude + distance);
-	
-		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery prepQ = data.prepare(q);
-	
-		for (Entity found : prepQ.asIterable()) {
-			// Longitude check in memory
-			FoodListing resultItem = new FoodListing(found);
-	
-			if (!resultItem.expired() && resultItem.getLongitude() >= (longitude - distance)
-					&& resultItem.getLongitude() <= (longitude + distance)) {
-				result.add(resultItem);
-			}
-		}
-	
-		return result;
-	}
+	public static Collection<FoodListing> getCurrentUserFoodListings() {
+		Collection<FoodListing> listings = FoodListing.getListingsFor(FoodMoverUser.getCurrentUser());
+		
+		return Collections2.filter(listings, new Predicate<FoodListing>() {
 
-	public static List<FoodListing> getCurrentUserFoodListings() {
-		List<FoodListing> result = new ArrayList<FoodListing>();
-		FoodMoverUser me = FoodMoverUser.getCurrentUser();
-		Query q = new Query("FoodListing");
-		q.addFilter("owner", Query.FilterOperator.EQUAL, me.getRawUserObject());
-	
-		DatastoreService data = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery prepQ = data.prepare(q);
-	
-		for (Entity found : prepQ.asIterable()) {
-			FoodListing resultItem = new FoodListing(found);
-	
-			if (resultItem.expired()) {
-				continue;
+			public boolean apply(FoodListing listing) {
+				return ! listing.expired();
 			}
-	
-			result.add(resultItem);
-		}
-	
-		return result;
+		});
 	}
 
 	public static void setCurrentUserType(boolean isProducer) throws InvalidActivityException {
 		FoodMoverUser user = FoodMoverUser.getCurrentUser(); 
 		if (user == null) {
-			user = FoodMoverUser.registerCurrentUser();
+			user = FoodMoverUser.createCurrentUser();
 		}
 		
 		user.setIsProducer(isProducer);
-		user.put();
+		ObjectifyUtil.get().put(user);
 	}
 
-	public static Key makeNotification(float lat, float longitude, float radius, String type) {
+	public static Key<FoodListingNotification> makeNotification(float lat, float longitude, float radiusKM) {
 		FoodListingNotification notification = new FoodListingNotification();
 		
 		notification.setLat(lat);
-		notification.setLongitude(longitude);
-		notification.setNotificationType(type);
-		notification.setRadiusKm(radius);
-		notification.setOwner(FoodMoverUser.getCurrentUser());
+		notification.setLng(longitude);
+		notification.setRadiusKm(radiusKM);
+		notification.setOwner(FoodMoverUser.getCurrentUser().getKey());
 	
-		notification.put();
-		
-		return notification.getKey();
+		return ObjectifyUtil.get().put(notification);
 	}
 
 }
