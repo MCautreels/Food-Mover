@@ -17,6 +17,7 @@ import org.rhok.foodmover.api.ObjectifyUtil;
 import org.rhok.foodmover.api.Util;
 import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.FoodListingNotification;
+import org.rhok.foodmover.entities.FoodMoverUser;
 
 import com.google.appengine.repackaged.com.google.common.collect.Sets;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -63,6 +64,14 @@ public class ApiTest {
 		assertEquals(description, result.getDescription());
 		assertSame(quantity, result.getQuantity());
 		assertEquals(expirationDate, result.getExpirationDate());
+	}
+	
+	@Test
+	public void testNotifyOnNewListing() {
+		float lat = 3;
+		float lng = 4;
+		
+		
 	}
 
 	@Test
@@ -130,5 +139,25 @@ public class ApiTest {
 				FoodListing.LAT_VAR_NAME, FoodListing.class));
 		
 		assertTrue(localListings.equals(inBoundsListings));
+	}
+	
+	@Test
+	public void testIsProducer() {
+		FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
+		currentUser.setIsProducer(true);
+		Key<FoodMoverUser> foodMoverUser = ObjectifyUtil.get().put(currentUser);
+		
+		FoodMoverUser restored = ObjectifyUtil.get().find(foodMoverUser);
+		assertTrue(restored.isProducer());
+	}
+	
+	@Test
+	public void testIsConsumer() {
+		FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
+		currentUser.setIsProducer(false);
+		Key<FoodMoverUser> foodMoverUser = ObjectifyUtil.get().put(currentUser);
+		
+		FoodMoverUser restored = ObjectifyUtil.get().find(foodMoverUser);
+		assertFalse(restored.isProducer());
 	}
 }
