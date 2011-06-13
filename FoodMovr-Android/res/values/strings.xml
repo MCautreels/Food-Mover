@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">FoodMover</string>
+    <!-- Main Screen -->
+    <string name="hello">Start Here!\nDo you want to donate food or do you want to get free food?</string>
+    <string name="btnP">Donate</string>
+    <string name="btnC">Pick Up</string>
+    <!-- Consumer Screen -->
+    <string name="loginConsumer">Login to your FoodMover account or register a new account</string>
+    <string name="mainPrompt">Where To?</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="register">Create</string>
+    <string name="rating">Rate Donation</string>
+    <string name="browse">Browse Listings</string>
+    <string name="notifications">Set Notifications</string>
+    <string name="prefs">Set Preferences</string>
+    <!-- Producer Screen -->
+    <string name="priority">Prioritize Receivers</string>
+    <string name="newListing">Create a Listing</string>
+    <string name="editHistory">Show History</string>
+</resources>

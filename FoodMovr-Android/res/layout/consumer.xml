@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+	
+	<LinearLayout android:id="@+id/c_loginSetup" 
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:orientation="vertical"
+		android:visibility="visible">
+		<TextView  
+		    style="@style/TextStyle"
+		    android:text="@string/loginConsumer"
+		    />	
+		<LinearLayout android:id="@+id/c_loginSetup" 
+			android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:orientation="horizontal">
+		    <Button android:id="@+id/c_login"
+			    style="@style/ButtonStyle"
+			    android:text="@string/login"
+			    android:onClick="fakeAccount"
+			    />
+			<Button android:id="@+id/c_register"
+			    style="@style/ButtonStyle"
+			    android:text="@string/register"
+			    android:onClick="fakeAccount"
+			    />
+		</LinearLayout>		    
+		
+		<EditText android:id="@+id/c_username"	
+			style="@style/TextStyle" 
+			android:hint="@string/username"
+			/>
+		<EditText android:id="@+id/c_password"	
+			style="@style/TextStyle"
+			android:hint="@string/password"
+			/>
+	</LinearLayout>	  
+	
+	<LinearLayout android:id="@+id/c_mainButtons" 
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:orientation="vertical"
+	    android:gravity="center_vertical"
+		android:visibility="gone">
+		<TextView  
+		    style="@style/TextStyle"
+		    android:text="@string/mainPrompt"
+		    />	
+	
+		<Button android:id="@+id/c_rate_producer"
+		    style="@style/ButtonStyle"
+		    android:text="@string/rating"
+		    />
+		<Button android:id="@+id/c_browse"
+		    style="@style/ButtonStyle"
+		    android:text="@string/browse"
+		    />
+		<Button android:id="@+id/c_notifications"
+		    style="@style/ButtonStyle"
+		    android:text="@string/notifications"
+		    />
+		<Button android:id="@+id/c_prefs"
+		    style="@style/ButtonStyle"
+		    android:text="@string/prefs"
+		    />	
+	</LinearLayout>	    	 
+</LinearLayout>

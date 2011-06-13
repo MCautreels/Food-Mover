@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- The style for text view and Edit Text objects -->
+  <style name="TextStyle" parent="@android:Widget.TextView">
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:gravity">bottom|center</item>
+    <item name="android:layout_margin">10dip</item>
+    <item name="android:textColor">@color/black</item>
+    <item name="android:textSize">20sp</item>
+  </style>
+
+  <!-- The style for a button. -->
+  <style name="ButtonStyle" parent="@android:Widget.Button">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:gravity">center</item>
+    <item name="android:padding">15dip</item>
+    <item name="android:textSize">20sp</item>
+    <item name="android:layout_marginTop">10dip</item>
+	<item name="android:layout_marginBottom">10dip</item>
+	<item name="android:layout_marginRight">30dip</item>
+	<item name="android:layout_marginLeft">30dip</item>
+  </style>
+</resources>

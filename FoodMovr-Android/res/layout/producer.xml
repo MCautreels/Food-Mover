@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+	
+	<LinearLayout android:id="@+id/pr_loginSetup" 
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:orientation="vertical"
+		android:visibility="visible">
+		<TextView  
+		    style="@style/TextStyle"
+		    android:text="@string/loginConsumer"
+		    />	
+		<LinearLayout android:id="@+id/pr_loginSetup" 
+			android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:orientation="horizontal">
+		    <Button android:id="@+id/pr_login"
+			    style="@style/ButtonStyle"
+			    android:text="@string/login"
+			    android:onClick="fakePAccount"
+			    />
+			<Button android:id="@+id/pr_register"
+			    style="@style/ButtonStyle"
+			    android:text="@string/register"
+			    android:onClick="fakePAccount"
+			    />
+		</LinearLayout>		    
+		
+		<EditText android:id="@+id/pr_username"	
+			style="@style/TextStyle" 
+			android:hint="@string/username"
+			/>
+		<EditText android:id="@+id/pr_password"	
+			style="@style/TextStyle"
+			android:hint="@string/password"
+			/>
+	</LinearLayout>	  
+	
+	<LinearLayout android:id="@+id/pr_mainButtons" 
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:orientation="vertical"
+	    android:gravity="center_vertical"
+		android:visibility="gone">
+		<TextView  
+		    style="@style/TextStyle"
+		    android:text="@string/mainPrompt"
+		    />	
+	
+		<Button android:id="@+id/pr_consumer"
+		    style="@style/ButtonStyle"
+		    android:text="@string/priority"
+		    />
+		<Button android:id="@+id/pr_add_listing"
+		    style="@style/ButtonStyle"
+		    android:text="@string/newListing"
+		    />
+		<Button android:id="@+id/pr_track_history"
+		    style="@style/ButtonStyle"
+		    android:text="@string/editHistory"
+		    />
+	</LinearLayout>	    	 
+</LinearLayout>
