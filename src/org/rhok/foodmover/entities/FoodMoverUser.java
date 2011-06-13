@@ -15,10 +15,11 @@ public class FoodMoverUser {
 	private Long id = null;
 
 	// this has to be the exact name of the user field, for querying
-	private static final String USER_VAR_NAME = "user";
+	private static final String USER_VAR_NAME = "userKey";
 
 	private boolean isProducer;
-	private transient Key<User> userKey;
+	
+	private Key<User> userKey;
 
 	/**
 	 * Get the currently logged in user.
@@ -35,7 +36,7 @@ public class FoodMoverUser {
 		}
 
 		Objectify objectify = ObjectifyUtil.get();
-		FoodMoverUser foodMoverUser = objectify.query(FoodMoverUser.class).filter(USER_VAR_NAME, currRawUser).get();
+		FoodMoverUser foodMoverUser = objectify.query(FoodMoverUser.class).filter(USER_VAR_NAME, keyOfUser(currRawUser)).get();
 
 		if (foodMoverUser != null) {
 			return foodMoverUser;
@@ -48,7 +49,16 @@ public class FoodMoverUser {
 	}
 
 	private void setUser(User user) {
-		userKey = new Key<User>(User.class, user.getEmail());
+		userKey = keyOfUser(user);
+	}
+
+	private static Key<User> keyOfUser(User user) {
+		// getEmail() can change even though the account stays the same
+		// getUserId() will not change.
+		
+		// Currently we use getEmail() because getUserId() fails in testing. 
+		// TODO find a way to use getUserId() such that it works in testing.
+		return new Key<User>(User.class, user.getEmail());
 	}
 
 	public static FoodMoverUser createCurrentUser() {

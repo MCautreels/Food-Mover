@@ -15,6 +15,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 
+// TODO refactor this into different test classes, bound together in a TestSuite
 public class ApiMethods {
 
 	public static Key<FoodListing> makeNewFoodListing(float lat, float longitude, String description, int quantity,

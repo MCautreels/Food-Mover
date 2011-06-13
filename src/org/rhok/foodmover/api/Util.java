@@ -34,9 +34,9 @@ public class Util {
 				.filter(latVarName + " <", lat + kmToLatitude(distanceKM)).list();
 
 		// GAE only supports queries on a single field, so we must filter by
-		// longitude in memory.
+		// longitude in memory
 		// If this becomes a bottleneck, consider using FusionTables, which
-		// support spatial queries.
+		// support spatial queries
 
 		return Collections2.filter(items, new Predicate<T>() {
 

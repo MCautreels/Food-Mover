@@ -60,7 +60,7 @@ public class ApiTest {
 
 		Objectify objectify = ObjectifyUtil.get();
 		FoodListing result = objectify.get(key);
-		
+
 		assertEquals(lat, result.getLat(), .2);
 		assertEquals(longitude, result.getLng(), .2);
 		assertEquals(description, result.getDescription());
@@ -70,15 +70,15 @@ public class ApiTest {
 
 	@Subclass
 	public static class MockNotification extends FoodListingNotification {
-		
+
 		private boolean notifyWasCalled;
-		
+
 		@Override
 		public void notifyUser(FoodListing listing) {
 			notifyWasCalled = true;
 			ObjectifyUtil.get().put(this);
 		}
-		
+
 		public boolean wasNotifyCalled() {
 			return notifyWasCalled;
 		}
@@ -89,7 +89,7 @@ public class ApiTest {
 	public void testNotifyOnNewListing() {
 		float lat = 3;
 		float lng = 4;
-		
+
 		Date expirationDate = new Date();
 		expirationDate.setHours(expirationDate.getHours() + 4);
 
@@ -97,12 +97,33 @@ public class ApiTest {
 		mockNotification.setLat(lat);
 		mockNotification.setLng(lng);
 		ObjectifyService.register(mockNotification.getClass());
-		
+
 		Key<MockNotification> mockNotificationKey = ObjectifyUtil.get().put(mockNotification);
 		assertNotNull(ObjectifyUtil.get().find(mockNotificationKey));
 		ApiMethods.makeNewFoodListing(lat, lng, "weasels", 3, expirationDate);
 
 		assertTrue(ObjectifyUtil.get().find(mockNotificationKey).wasNotifyCalled());
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotifyNotCalledTooFarFromNewListing() {
+		float lat = 3;
+		float lng = 4;
+
+		Date expirationDate = new Date();
+		expirationDate.setHours(expirationDate.getHours() + 4);
+
+		MockNotification mockNotification = new MockNotification();
+		mockNotification.setLat(lat + 1);
+		mockNotification.setLng(lng + 1);
+		ObjectifyService.register(mockNotification.getClass());
+
+		Key<MockNotification> mockNotificationKey = ObjectifyUtil.get().put(mockNotification);
+		assertNotNull(ObjectifyUtil.get().find(mockNotificationKey));
+		ApiMethods.makeNewFoodListing(lat, lng, "weasels", 3, expirationDate);
+
+		assertFalse(ObjectifyUtil.get().find(mockNotificationKey).wasNotifyCalled());
 	}
 
 	@Test
@@ -173,6 +194,31 @@ public class ApiTest {
 	}
 
 	@Test
+	public void testListingsForCurrentUser() {
+		int lat = 3;
+		int lng = 4;
+		Set<FoodListing> ownedListings = Sets.newHashSet(new FoodListing(lat, lng), new FoodListing(lat + .1f,
+				lng + .1f), new FoodListing(lat - .1f, lng - .1f));
+
+		for (FoodListing listing : ownedListings) {
+			listing.setOwner(FoodMoverUser.getCurrentUser());
+		}
+
+		Set<FoodListing> unownedListings = Sets.newHashSet(new FoodListing(lat + .2f, lng), new FoodListing(lat - .1f,
+				lng + .1f), new FoodListing(lat - .1f, lng + .1f));
+
+		Objectify objectify = ObjectifyUtil.get();
+		objectify.put(ownedListings);
+		objectify.put(unownedListings);
+
+		Set<FoodListing> listingsForCurrentUser = Sets.newHashSet(FoodListing.getListingsFor(FoodMoverUser
+				.getCurrentUser()));
+
+		assertTrue(listingsForCurrentUser.equals(ownedListings));
+		assertEquals(0, Sets.intersection(listingsForCurrentUser, unownedListings).size());
+	}
+
+	@Test
 	public void testIsProducer() {
 		FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
 		currentUser.setIsProducer(true);
@@ -191,4 +237,9 @@ public class ApiTest {
 		FoodMoverUser restored = ObjectifyUtil.get().find(foodMoverUser);
 		assertFalse(restored.isProducer());
 	}
+
+	// TODO: add test asserting that *_VAR_NAME fields actually correspond to a field on that method
+	// For example, in FoodMoverUser, we have OWNER_VAR_NAME = "userKey", and a field `private Key<User> userKey`.
+	// If `userKey` was renamed, but OWNER_VAR_NAME was the same, we'd have a silent failure leading to invalid queries.
+	// It would be nice to verify these fields are correctly named programmatically.
 }

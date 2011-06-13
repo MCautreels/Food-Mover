@@ -119,9 +119,9 @@ public class FoodListing implements GeoItem {
 		return Util.findWithinDistance(lat, longitude, distanceKM, LAT_VAR_NAME, FoodListing.class);
 	}
 
-	public static Collection<FoodListing> getListingsFor(FoodMoverUser currentUser) {
+	public static Collection<FoodListing> getListingsFor(FoodMoverUser user) {
 		Objectify ofy = ObjectifyUtil.get();
-		return ofy.query(FoodListing.class).filter(OWNER_VAR_NAME, currentUser.getKey()).list();
+		return ofy.query(FoodListing.class).filter(OWNER_VAR_NAME, user.getKey()).list();
 	}
 
 	@Override
