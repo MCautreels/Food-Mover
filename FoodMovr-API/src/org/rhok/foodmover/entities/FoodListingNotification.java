@@ -13,6 +13,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.Id;
 
+import org.rhok.foodmover.api.ApiMethods;
 import org.rhok.foodmover.api.ObjectifyUtil;
 import org.rhok.foodmover.api.Util;
 import org.rhok.foodmover.test.ApiTest;
@@ -21,6 +22,11 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.annotation.Entity;
 
+/**
+ * Represents a user's wish to be notified when new food listings are created for a specified area. 
+ * A listing is said to be "in range" of a notification if that listing is close enough
+ * that a the notification should fire when the listing is created.
+ */
 // this @Entity notification is necessary so we can mock notifications
 @Entity
 public class FoodListingNotification implements GeoItem {
@@ -82,6 +88,12 @@ public class FoodListingNotification implements GeoItem {
 		this.radiusKm = radiusKm;
 	}
 
+	/**
+	 * Notify the owner of this notification that a new listing has been created.
+	 * If `listing` is too far away, do nothing.
+	 * 
+	 * @param listing	the listing to notify the owner about
+	 */
 	public void notifyUser(FoodListing listing) {
 		if (!closeEnoughTo(listing)) {
 			return;
@@ -109,27 +121,27 @@ public class FoodListingNotification implements GeoItem {
 		}
 	}
 
+	/**
+	 * Check if `listing` is within range of this notification.
+	 * 
+	 * @param listing
+	 * @return
+	 */
 	public boolean closeEnoughTo(FoodListing listing) {
-		// Spherical Law of Cosines
-		// http://www.movable-type.co.uk/scripts/latlong.html
-		final int EARTH_RADIUS_KM = 6371;
-
-		double lat1 = Math.toRadians(listing.getLat());
-		double lng1 = Math.toRadians(listing.getLng());
-
-		double lat2 = Math.toRadians(getLat());
-		double lng2 = Math.toRadians(getLng());
-
-		// distance is in KM
-		double distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2)
-				* Math.cos(lng2 - lng1))
-				* EARTH_RADIUS_KM;
+		double distance = Util.distanceBetween(getLat(), getLng(), listing);
 
 		return distance < getRadiusKm();
 	}
 
+	
+
+	/**
+	 * Fire all notifications for which `listing` is within range.
+	 * 
+	 * @param listing
+	 */
 	public static void notifyOfNewListing(FoodListing listing) {
-		Collection<FoodListingNotification> notifications = Util.findWithinDistance(listing.getLat(), listing.getLng(),
+		Collection<FoodListingNotification> notifications = ApiMethods.findWithinDistance(listing.getLat(), listing.getLng(),
 				RADIUS_LIMIT_KM, LAT_VAR_NAME, FoodListingNotification.class);
 
 		for (FoodListingNotification notification : notifications) {

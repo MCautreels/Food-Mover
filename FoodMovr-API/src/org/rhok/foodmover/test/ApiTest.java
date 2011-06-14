@@ -6,8 +6,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.After;
@@ -20,6 +22,8 @@ import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.FoodListingNotification;
 import org.rhok.foodmover.entities.FoodMoverUser;
 
+import com.google.appengine.repackaged.com.google.common.collect.Collections2;
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import com.google.appengine.repackaged.com.google.common.collect.Sets;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -29,6 +33,7 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Subclass;
 
+// TODO refactor this into different test classes, bound together in a TestSuite
 public class ApiTest {
 
 	// it's necessary to have LocalDatastoreServiceTestConfig here, because then we don't leak state across tests
@@ -58,6 +63,7 @@ public class ApiTest {
 
 		Key<FoodListing> key = ApiMethods.makeNewFoodListing(lat, longitude, description, quantity, expirationDate);
 
+		Date afterListingCreation = new Date();
 		Objectify objectify = ObjectifyUtil.get();
 		FoodListing result = objectify.get(key);
 
@@ -66,6 +72,7 @@ public class ApiTest {
 		assertEquals(description, result.getDescription());
 		assertSame(quantity, result.getQuantity());
 		assertEquals(expirationDate, result.getExpirationDate());
+		assertTrue(afterListingCreation.after(result.getCreationDate()));
 	}
 
 	@Subclass
@@ -169,10 +176,29 @@ public class ApiTest {
 
 		ObjectifyUtil.get().put(originalListings);
 
-		Set<FoodListing> localListings = Sets.newHashSet(Util.findWithinDistance(lat, lng, 20,
+		Set<FoodListing> localListings = Sets.newHashSet(ApiMethods.findWithinDistance(lat, lng, 20,
 				FoodListing.LAT_VAR_NAME, FoodListing.class));
 
 		assertTrue(localListings.equals(originalListings));
+	}
+
+	@Test
+	public void testFindInAreaSortedByDistance() {
+		int lat = 3;
+		int lng = 4;
+		FoodListing closest = new FoodListing(lat, lng);
+		FoodListing close = new FoodListing(lat + .01f, lng + .01f);
+		FoodListing furthest = new FoodListing(lat - .1f, lng - .1f);
+
+		List<FoodListing> listingsInOrder = Lists.newArrayList(closest, close, furthest);
+		List<FoodListing> listingsNotInOrder = Lists.newArrayList(furthest, closest, close);
+		
+		ObjectifyUtil.get().put(listingsNotInOrder);
+
+		List<FoodListing> localListings = ApiMethods.findWithinDistance(lat, lng, 20, FoodListing.LAT_VAR_NAME,
+				FoodListing.class);
+
+		assertEquals(listingsInOrder, localListings);
 	}
 
 	@Test
@@ -187,7 +213,7 @@ public class ApiTest {
 		ObjectifyUtil.get().put(outsider);
 		ObjectifyUtil.get().put(inBoundsListings);
 
-		Set<FoodListing> localListings = Sets.newHashSet(Util.findWithinDistance(lat, lng, 20,
+		Set<FoodListing> localListings = Sets.newHashSet(ApiMethods.findWithinDistance(lat, lng, 20,
 				FoodListing.LAT_VAR_NAME, FoodListing.class));
 
 		assertTrue(localListings.equals(inBoundsListings));
@@ -216,6 +242,38 @@ public class ApiTest {
 
 		assertTrue(listingsForCurrentUser.equals(ownedListings));
 		assertEquals(0, Sets.intersection(listingsForCurrentUser, unownedListings).size());
+	}
+
+	@Test
+	public void testListingsSortedByCreationDate() {
+		int lat = 3;
+		int lng = 4;
+		FoodListing firstListing = new FoodListing(lat, lng);
+		
+		// it's necessary to explicitly set the creation date
+		// or the test may fail because all three constructors
+		// get called so quickly.
+		firstListing.setCreationDate(new Date(2009, 1, 1));
+		FoodListing secondListing = new FoodListing(lat + .1f, lng + .1f);
+		secondListing.setCreationDate(new Date(2010, 1, 1));
+		FoodListing thirdListing = new FoodListing(lat - .1f, lng - .1f);
+		thirdListing.setCreationDate(new Date(2011, 1, 1));
+
+		List<FoodListing> sortedByCreationDate = Lists.newArrayList(firstListing, secondListing, thirdListing);
+
+		for (FoodListing listing : sortedByCreationDate) {
+			listing.setOwner(FoodMoverUser.getCurrentUser());
+		}
+		
+		List<FoodListing> shuffled = Lists.newArrayList(sortedByCreationDate);
+		Collections.shuffle(shuffled);
+
+		Objectify objectify = ObjectifyUtil.get();
+		objectify.put(shuffled);
+
+		List<FoodListing> listingsForCurrentUser = FoodListing.getListingsFor(FoodMoverUser.getCurrentUser());
+
+		assertEquals(sortedByCreationDate, listingsForCurrentUser);
 	}
 
 	@Test

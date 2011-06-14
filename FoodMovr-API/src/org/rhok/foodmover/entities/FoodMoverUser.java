@@ -1,5 +1,7 @@
 package org.rhok.foodmover.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Id;
 
 import org.rhok.foodmover.api.ObjectifyUtil;
@@ -9,7 +11,12 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 
-public class FoodMoverUser {
+/**
+ * A wrapper around GAE's User object. 
+ */
+public class FoodMoverUser implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	private Long id = null;

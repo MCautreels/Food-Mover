@@ -1,13 +1,7 @@
 package org.rhok.foodmover.api;
 
-import java.util.Collection;
-
+import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.GeoItem;
-
-import com.google.appengine.repackaged.com.google.common.base.Predicate;
-import com.google.appengine.repackaged.com.google.common.collect.Collections2;
-import com.googlecode.objectify.Objectify;
-import com.googlecode.objectify.Query;
 
 public class Util {
 
@@ -22,29 +16,23 @@ public class Util {
 		// http://geography.about.com/library/faq/blqzdistancedegree.htm
 		return km / 111;
 	}
+	
+	public static float distanceBetween(float lat, float lng, GeoItem point) {
+		// Spherical Law of Cosines
+		// http://www.movable-type.co.uk/scripts/latlong.html
+		final int EARTH_RADIUS_KM = 6371;
 
-	// having to pass both <T> and Class<T> is rough. Thanks Java and type
-	// erasure!
-	public static <T extends GeoItem> Collection<T> findWithinDistance(float lat, final float lng,
-			final float distanceKM, String latVarName, Class<T> clazz) {
-		Objectify objectify = ObjectifyUtil.get();
+		double lat1 = Math.toRadians(point.getLat());
+		double lng1 = Math.toRadians(point.getLng());
 
-		// This query will probably fail for lat wrap around
-		Collection<T> items = objectify.query(clazz).filter(latVarName + " >", lat - kmToLatitude(distanceKM))
-				.filter(latVarName + " <", lat + kmToLatitude(distanceKM)).list();
+		double lat2 = Math.toRadians(lat);
+		double lng2 = Math.toRadians(lng);
 
-		// GAE only supports queries on a single field, so we must filter by
-		// longitude in memory
-		// If this becomes a bottleneck, consider using FusionTables, which
-		// support spatial queries
-
-		return Collections2.filter(items, new Predicate<T>() {
-
-			public boolean apply(T item) {
-				return item.getLng() > lng - kmToLongitude(distanceKM)
-						&& item.getLng() < lng + kmToLongitude(distanceKM);
-			}
-		});
+		// distance is in KM
+		double distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2)
+				* Math.cos(lng2 - lng1))
+				* EARTH_RADIUS_KM;
+		return (float) distance;
 	}
 
 }

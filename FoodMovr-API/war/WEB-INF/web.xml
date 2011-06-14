@@ -4,7 +4,21 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-	
+
+	<servlet>
+		<servlet-name>adapter</servlet-name>
+		<servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
+		<init-param>
+			<param-name>org.restlet.application</param-name>
+			<param-value>org.rhok.foodmover.FoodMovrApi</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>adapter</servlet-name>
+		<url-pattern>/api/v1/*</url-pattern>
+	</servlet-mapping>
+	<!--  
 	<servlet>
 		<servlet-name>Listing</servlet-name>
 		<servlet-class>org.rhok.foodmover.api.ListingServlet</servlet-class>
@@ -44,7 +58,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-name>Notification</servlet-name>
 		<url-pattern>/api/v1/notification</url-pattern>
 	</servlet-mapping>
-	
+	 -->
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
