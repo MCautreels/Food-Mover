@@ -14,5 +14,6 @@ public final class ArgNames {
 	public static final String KEY_ARG_NAME = "key";
 	
 	public static final String EXPIRATION_DATE_ARG_NAME = "expirationdate";
+	public static final String USER_KIND = "userKind";
 
 }

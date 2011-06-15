@@ -4,13 +4,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
+import org.restlet.resource.Put;
 import org.rhok.foodmover.api.ApiMethods;
 import org.rhok.foodmover.api.ArgNames;
+import org.rhok.foodmover.api.ObjectifyUtil;
 import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.FoodMoverUser;
 
@@ -20,15 +20,13 @@ import com.googlecode.objectify.Key;
 /**
  * A resource exposing the FoodListing object to REST queries
  */
-public class FoodListingResource extends ServerResource {
-
-	private String getArg(String argName) {
-		return getQuery().getFirstValue(argName);
-	}
+public class FoodListingResource extends BaseResource {
 
 	@Get
 	public List<FoodListing> retrieve() {
 		if (getQuery().isEmpty()) { // if no args are given
+			requireUserLoggedIn();
+
 			return FoodListing.getListingsFor(FoodMoverUser.getCurrentUser());
 		}
 
@@ -47,6 +45,7 @@ public class FoodListingResource extends ServerResource {
 
 	@Post
 	public String create() {
+		requireUserLoggedIn();
 		try {
 			float lat = Float.parseFloat(getArg(ArgNames.LAT_ARG_NAME));
 			float lng = Float.parseFloat(getArg(ArgNames.LONGITUDE_ARG_NAME));
@@ -63,6 +62,24 @@ public class FoodListingResource extends ServerResource {
 					+ e, e);
 		} catch (ParseException e) {
 			throw new IllegalArgumentException("Date was not properly formatted. It should be a unix timestamp.<br />"
+					+ e, e);
+		}
+	}
+
+	@Put
+	public void edit() {
+		requireUserLoggedIn();
+		try {
+			float lat = Float.parseFloat(getArg(ArgNames.LAT_ARG_NAME));
+			float lng = Float.parseFloat(getArg(ArgNames.LONGITUDE_ARG_NAME));
+			String description = getArg(ArgNames.DESCRIPTION_ARG_NAME);
+			int quantity = Integer.parseInt(getArg(ArgNames.QUANTITY_ARG_NAME));
+			Key<FoodListing> key = new Key<FoodListing>(KeyFactory.stringToKey(getArg(ArgNames.KEY_ARG_NAME)));
+
+			ApiMethods.updateListing(ObjectifyUtil.ofy().get(key), description, lat, lng, quantity);
+
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Did you pass an argument that couldn't be parsed as a number?<br />"
 					+ e, e);
 		}
 	}

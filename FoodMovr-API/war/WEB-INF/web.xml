@@ -10,7 +10,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
 		<init-param>
 			<param-name>org.restlet.application</param-name>
-			<param-value>org.rhok.foodmover.FoodMovrApi</param-value>
+			<param-value>org.rhok.foodmover.FoodMovrRestApi</param-value>
 		</init-param>
 	</servlet>
 

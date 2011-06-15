@@ -23,7 +23,7 @@ public class ObjectifyUtil {
 	 * 
 	 * @return
 	 */
-	public static Objectify get() {
+	public static Objectify ofy() {
 		return ObjectifyService.begin();
 	}
 	

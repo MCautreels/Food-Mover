@@ -5,8 +5,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.activity.InvalidActivityException;
-
 import org.rhok.foodmover.entities.FoodListing;
 import org.rhok.foodmover.entities.FoodListingNotification;
 import org.rhok.foodmover.entities.FoodMoverUser;
@@ -14,7 +12,6 @@ import org.rhok.foodmover.entities.GeoItem;
 
 import com.google.appengine.repackaged.com.google.common.base.Predicate;
 import com.google.appengine.repackaged.com.google.common.collect.Collections2;
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import com.google.appengine.repackaged.com.google.common.collect.Ordering;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
@@ -35,7 +32,7 @@ public class ApiMethods {
 			listing.setExpirationDate(expirationDate);
 		}
 
-		Objectify objectify = ObjectifyUtil.get();
+		Objectify objectify = ObjectifyUtil.ofy();
 		Key<FoodListing> key = objectify.put(listing);
 
 		FoodListingNotification.notifyOfNewListing(listing);
@@ -65,14 +62,16 @@ public class ApiMethods {
 		});
 	}
 
-	public static void setCurrentUserType(boolean isProducer) throws InvalidActivityException {
+	public static void setCurrentUserIsProducer(boolean isProducer) {
 		FoodMoverUser user = FoodMoverUser.getCurrentUser();
 		if (user == null) {
 			user = FoodMoverUser.createCurrentUser();
 		}
+		
+		// what if the user isn't logged in?
 
 		user.setIsProducer(isProducer);
-		ObjectifyUtil.get().put(user);
+		ObjectifyUtil.ofy().put(user);
 	}
 
 	public static Key<FoodListingNotification> makeNotification(float lat, float longitude, float radiusKM) {
@@ -83,14 +82,14 @@ public class ApiMethods {
 		notification.setRadiusKm(radiusKM);
 		notification.setOwner(FoodMoverUser.getCurrentUser().getKey());
 
-		return ObjectifyUtil.get().put(notification);
+		return ObjectifyUtil.ofy().put(notification);
 	}
 
 	// having to pass both <T> and Class<T> is rough. Thanks Java and type
 	// erasure!
 	public static <T extends GeoItem> List<T> findWithinDistance(final float lat, final float lng, final float distanceKM,
 			String latVarName, Class<T> clazz) {
-		Objectify objectify = ObjectifyUtil.get();
+		Objectify objectify = ObjectifyUtil.ofy();
 
 		// This query will probably fail for lat wrap around
 		Collection<T> items = objectify.query(clazz).filter(latVarName + " >", lat - Util.kmToLatitude(distanceKM))

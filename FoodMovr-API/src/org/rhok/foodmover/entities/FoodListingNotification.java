@@ -68,7 +68,7 @@ public class FoodListingNotification implements GeoItem {
 	}
 
 	public FoodMoverUser getOwner() {
-		Objectify ofy = ObjectifyUtil.get();
+		Objectify ofy = ObjectifyUtil.ofy();
 		return ofy.get(owner);
 	}
 

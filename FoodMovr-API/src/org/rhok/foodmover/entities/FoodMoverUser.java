@@ -42,7 +42,7 @@ public class FoodMoverUser implements Serializable {
 			return null;
 		}
 
-		Objectify objectify = ObjectifyUtil.get();
+		Objectify objectify = ObjectifyUtil.ofy();
 		FoodMoverUser foodMoverUser = objectify.query(FoodMoverUser.class).filter(USER_VAR_NAME, keyOfUser(currRawUser)).get();
 
 		if (foodMoverUser != null) {
@@ -87,6 +87,6 @@ public class FoodMoverUser implements Serializable {
 	}
 
 	public User getRawUserObject() {
-		return ObjectifyUtil.get().get(userKey);
+		return ObjectifyUtil.ofy().get(userKey);
 	}
 }

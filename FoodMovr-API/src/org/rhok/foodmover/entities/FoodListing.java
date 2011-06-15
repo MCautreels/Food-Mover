@@ -1,8 +1,6 @@
 package org.rhok.foodmover.entities;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -133,7 +131,7 @@ public class FoodListing implements GeoItem, Serializable {
 	// if we throw @JsonProperty on this method directly, and `owner` is null,
 	// Restlet will complain. Thus, we use getOwnerId() instead.
 	public FoodMoverUser getOwner() {
-		Objectify ofy = ObjectifyUtil.get();
+		Objectify ofy = ObjectifyUtil.ofy();
 		return ofy.get(owner);
 	}
 
@@ -174,7 +172,7 @@ public class FoodListing implements GeoItem, Serializable {
 	 * 
 	 */
 	public static List<FoodListing> getListingsFor(FoodMoverUser user) {
-		Objectify ofy = ObjectifyUtil.get();
+		Objectify ofy = ObjectifyUtil.ofy();
 		List<FoodListing> unsortedResults = ofy.query(FoodListing.class).filter(OWNER_VAR_NAME, user.getKey()).list();
 		
 		return Ordering.from(new Comparator<FoodListing>() {

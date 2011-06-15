@@ -64,7 +64,7 @@ public class ApiTest {
 		Key<FoodListing> key = ApiMethods.makeNewFoodListing(lat, longitude, description, quantity, expirationDate);
 
 		Date afterListingCreation = new Date();
-		Objectify objectify = ObjectifyUtil.get();
+		Objectify objectify = ObjectifyUtil.ofy();
 		FoodListing result = objectify.get(key);
 
 		assertEquals(lat, result.getLat(), .2);
@@ -83,7 +83,7 @@ public class ApiTest {
 		@Override
 		public void notifyUser(FoodListing listing) {
 			notifyWasCalled = true;
-			ObjectifyUtil.get().put(this);
+			ObjectifyUtil.ofy().put(this);
 		}
 
 		public boolean wasNotifyCalled() {
@@ -105,11 +105,11 @@ public class ApiTest {
 		mockNotification.setLng(lng);
 		ObjectifyService.register(mockNotification.getClass());
 
-		Key<MockNotification> mockNotificationKey = ObjectifyUtil.get().put(mockNotification);
-		assertNotNull(ObjectifyUtil.get().find(mockNotificationKey));
+		Key<MockNotification> mockNotificationKey = ObjectifyUtil.ofy().put(mockNotification);
+		assertNotNull(ObjectifyUtil.ofy().find(mockNotificationKey));
 		ApiMethods.makeNewFoodListing(lat, lng, "weasels", 3, expirationDate);
 
-		assertTrue(ObjectifyUtil.get().find(mockNotificationKey).wasNotifyCalled());
+		assertTrue(ObjectifyUtil.ofy().find(mockNotificationKey).wasNotifyCalled());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -126,11 +126,11 @@ public class ApiTest {
 		mockNotification.setLng(lng + 1);
 		ObjectifyService.register(mockNotification.getClass());
 
-		Key<MockNotification> mockNotificationKey = ObjectifyUtil.get().put(mockNotification);
-		assertNotNull(ObjectifyUtil.get().find(mockNotificationKey));
+		Key<MockNotification> mockNotificationKey = ObjectifyUtil.ofy().put(mockNotification);
+		assertNotNull(ObjectifyUtil.ofy().find(mockNotificationKey));
 		ApiMethods.makeNewFoodListing(lat, lng, "weasels", 3, expirationDate);
 
-		assertFalse(ObjectifyUtil.get().find(mockNotificationKey).wasNotifyCalled());
+		assertFalse(ObjectifyUtil.ofy().find(mockNotificationKey).wasNotifyCalled());
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class ApiTest {
 		Set<FoodListing> originalListings = Sets.newHashSet(new FoodListing(lat, lng), new FoodListing(lat + .1f,
 				lng + .1f), new FoodListing(lat - .1f, lng - .1f));
 
-		ObjectifyUtil.get().put(originalListings);
+		ObjectifyUtil.ofy().put(originalListings);
 
 		Set<FoodListing> localListings = Sets.newHashSet(ApiMethods.findWithinDistance(lat, lng, 20,
 				FoodListing.LAT_VAR_NAME, FoodListing.class));
@@ -193,7 +193,7 @@ public class ApiTest {
 		List<FoodListing> listingsInOrder = Lists.newArrayList(closest, close, furthest);
 		List<FoodListing> listingsNotInOrder = Lists.newArrayList(furthest, closest, close);
 		
-		ObjectifyUtil.get().put(listingsNotInOrder);
+		ObjectifyUtil.ofy().put(listingsNotInOrder);
 
 		List<FoodListing> localListings = ApiMethods.findWithinDistance(lat, lng, 20, FoodListing.LAT_VAR_NAME,
 				FoodListing.class);
@@ -210,8 +210,8 @@ public class ApiTest {
 
 		FoodListing outsider = new FoodListing(lat + 1, lng + 1);
 
-		ObjectifyUtil.get().put(outsider);
-		ObjectifyUtil.get().put(inBoundsListings);
+		ObjectifyUtil.ofy().put(outsider);
+		ObjectifyUtil.ofy().put(inBoundsListings);
 
 		Set<FoodListing> localListings = Sets.newHashSet(ApiMethods.findWithinDistance(lat, lng, 20,
 				FoodListing.LAT_VAR_NAME, FoodListing.class));
@@ -233,7 +233,7 @@ public class ApiTest {
 		Set<FoodListing> unownedListings = Sets.newHashSet(new FoodListing(lat + .2f, lng), new FoodListing(lat - .1f,
 				lng + .1f), new FoodListing(lat - .1f, lng + .1f));
 
-		Objectify objectify = ObjectifyUtil.get();
+		Objectify objectify = ObjectifyUtil.ofy();
 		objectify.put(ownedListings);
 		objectify.put(unownedListings);
 
@@ -268,7 +268,7 @@ public class ApiTest {
 		List<FoodListing> shuffled = Lists.newArrayList(sortedByCreationDate);
 		Collections.shuffle(shuffled);
 
-		Objectify objectify = ObjectifyUtil.get();
+		Objectify objectify = ObjectifyUtil.ofy();
 		objectify.put(shuffled);
 
 		List<FoodListing> listingsForCurrentUser = FoodListing.getListingsFor(FoodMoverUser.getCurrentUser());
@@ -280,9 +280,9 @@ public class ApiTest {
 	public void testIsProducer() {
 		FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
 		currentUser.setIsProducer(true);
-		Key<FoodMoverUser> foodMoverUser = ObjectifyUtil.get().put(currentUser);
+		Key<FoodMoverUser> foodMoverUser = ObjectifyUtil.ofy().put(currentUser);
 
-		FoodMoverUser restored = ObjectifyUtil.get().find(foodMoverUser);
+		FoodMoverUser restored = ObjectifyUtil.ofy().find(foodMoverUser);
 		assertTrue(restored.isProducer());
 	}
 
@@ -290,9 +290,9 @@ public class ApiTest {
 	public void testIsConsumer() {
 		FoodMoverUser currentUser = FoodMoverUser.getCurrentUser();
 		currentUser.setIsProducer(false);
-		Key<FoodMoverUser> foodMoverUser = ObjectifyUtil.get().put(currentUser);
+		Key<FoodMoverUser> foodMoverUser = ObjectifyUtil.ofy().put(currentUser);
 
-		FoodMoverUser restored = ObjectifyUtil.get().find(foodMoverUser);
+		FoodMoverUser restored = ObjectifyUtil.ofy().find(foodMoverUser);
 		assertFalse(restored.isProducer());
 	}
 
