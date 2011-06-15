@@ -42,8 +42,19 @@
 					<p>Connect from your desktop or smartphone</p>
 				</div>
 				<div class="bottomBox">
-					<a class="largeButton" id="loginProducerButton" href="#">I want to give food away</a>
-					<a class="largeButton" id="loginConsumerButton" href="#">I want to get extra food</a>
+					<form action="https://spreadsheets.google.com/spreadsheet/formResponse?formkey=dHVMTGgyRUNfczFrb3ZHVTgzVXFUY2c6MQ&ifq" method="POST" id="ss-form">
+
+						<p>
+							<label class="ss-q-title" for="entry_0">
+								Please leave your email address<br>if you'd like to join the FoodMovr alpha.
+							</label>
+						</p>
+						
+						<p>
+							<input type="text" name="entry.0.single" value="" class="ss-q-short" id="entry_0">
+							<input type="submit" name="submit" value="Register">
+						</p>
+					</form>
 				</div>
 			</div>
 		</div>
